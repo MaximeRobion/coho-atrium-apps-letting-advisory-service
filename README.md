@@ -101,6 +101,55 @@ Hosting injects `ATRIUM_SETUP_SECRET` and Tawk env. Do not bake secrets into the
 
 `design/` is the COHO Atrium design kit (from HouseShare `samples/atrium/hello-node/design/`). See [`AGENTS.md`](./AGENTS.md). Store catalogue copy lives under [`assets/`](./assets/).
 
+## Remotes / Labs
+
+Canonical source of truth is the CompanyForLife org repo. The personal Labs clone is the deploy target for Atrium Labs dogfood — keep both `main` branches at the same SHA.
+
+| Remote | URL | Role |
+|--------|-----|------|
+| `origin` (fetch) | `https://github.com/CompanyForLife/atrium-lettings-advice.git` | Canonical / org |
+| `labs` (fetch) | `https://github.com/MaximeRobion/coho-atrium-apps-letting-advisory-service.git` | Personal Labs clone |
+| `origin` (push, dual) | both URLs above | One `git push` updates org + Labs |
+
+### One-time setup (after clone)
+
+```bash
+git remote rename origin company   # optional; or keep origin as org
+# Prefer keeping origin = org, then:
+git remote add labs https://github.com/MaximeRobion/coho-atrium-apps-letting-advisory-service.git
+git remote set-url --add --push origin https://github.com/CompanyForLife/atrium-lettings-advice.git
+git remote set-url --add --push origin https://github.com/MaximeRobion/coho-atrium-apps-letting-advisory-service.git
+```
+
+Verify:
+
+```bash
+git remote -v
+# origin  …/CompanyForLife/atrium-lettings-advice.git (fetch)
+# origin  …/CompanyForLife/atrium-lettings-advice.git (push)
+# origin  …/MaximeRobion/coho-atrium-apps-letting-advisory-service.git (push)
+# labs    …/MaximeRobion/coho-atrium-apps-letting-advisory-service.git (fetch)
+```
+
+### Everyday push
+
+```bash
+git push origin main
+# or simply: git push
+```
+
+That pushes `main` to **both** remotes because of the dual push URLs on `origin`.
+
+Fetch Labs history when needed: `git fetch labs`. Never force-push the org remote. If Labs drifts and Maxime intentionally wants it realigned from org `main`, use `git push --force-with-lease labs main` only (Labs target), after confirming overwrite is expected.
+
+Optional alias (shell profile):
+
+```bash
+alias git-pushall='git push origin'
+```
+
+(With dual push URLs configured, `git push origin` already means “pushall”.)
+
 ## Support ownership
 
 COHO owns this seed (bugs, Hosting, Store listing). Chat content and history live in Julie’s Tawk property; disconnect only wipes this app’s connection secrets. PII (name / email / org label) is sent to Tawk when Secure Mode login runs.
