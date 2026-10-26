@@ -1,0 +1,26 @@
+{
+  "name": "atrium-lettings-advice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "COHO Atrium seed app: Lettings Advice Service (Tawk.to chat)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && mkdir -p dist/src/ui && cp src/ui/*.html dist/src/ui/ && cp -R src/ui/components dist/src/ui/ && mkdir -p dist/design && cp -R design/* dist/design/",
+    "start": "node --import tsx src/index.ts",
+    "start:dist": "node dist/index.js",
+    "dev": "node --import tsx src/dev/runLocal.ts",
+    "dev:watch": "node --import tsx --watch src/dev/runLocal.ts",
+    "seed": "node --import tsx src/dev/seedLocal.ts",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:design": "node design/check.cjs src/ui/quickView.html"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

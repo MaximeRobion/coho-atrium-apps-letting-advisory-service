@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lettings Advice Service</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../design/coho.css">
+</head>
+<body>
+  <!-- Icons from design/icons.svg (COHO design guide). -->
+  <svg xmlns="http://www.w3.org/2000/svg" hidden>
+    <symbol id="icon-chat" viewBox="0 0 30 30"><path d="M4 6c0-1.1.9-2 2-2h18c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H12l-5.2 4.1c-.7.5-1.8 0-1.8-.9V20H6c-1.1 0-2-.9-2-2V6zm3 3v2h16V9H7zm0 4v2h10v-2H7z"/></symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 30 30"><path d="M18.7 6.3c.7.7.7 1.8 0 2.5L13.5 14l5.2 5.2c.7.7.7 1.8 0 2.5-.7.7-1.8.7-2.5 0l-6.5-6.5c-.7-.7-.7-1.8 0-2.5l6.5-6.5c.7-.6 1.8-.6 2.5.1z"/></symbol>
+    <symbol id="icon-cross" viewBox="0 0 30 30"><path d="m10.4142136 7.58578644 4.5857864 4.58521356 4.5857864-4.58521356c.7399408-.73994077 1.915425-.77888502 2.7012124-.11683275l.1272148.11683275c.7810485.78104858.7810485 2.04737854 0 2.82842716l-4.5852136 4.5857864 4.5852136 4.5857864c.7810485.7810486.7810485 2.0473786 0 2.8284272-.7810486.7810485-2.0473786.7810485-2.8284272 0l-4.5857864-4.5852136-4.5857864 4.5852136c-.7399408.7399407-1.91542496.778885-2.70121239.1168327l-.12721477-.1168327c-.78104859-.7810486-.78104859-2.0473786 0-2.8284272l4.58521356-4.5857864-4.58521356-4.5857864c-.78104859-.78104862-.78104859-2.04737858 0-2.82842716.78104858-.78104859 2.04737854-.78104859 2.82842716 0z"/></symbol>
+  </svg>
+
+  <main class="u-padding-left--20 u-padding-right--20 u-padding-bottom--20">
+    <section id="screen-home" class="page__section page__section--narrow las-screen">
+      <h1 class="heading--1 u-margin-top--20 u-margin-bottom--10">Lettings Advice Service</h1>
+      <p class="lede u-margin-bottom--20">
+        Chat with Julie’s lettings advice team from COHO. Store install grants access; there is no in-app billing in this release.
+      </p>
+      <p class="u-text--small u-margin-bottom--20" id="home-hint">
+        Document library is coming soon.
+      </p>
+      <div class="button__group">
+        <div class="button__group-item">
+          <button type="button" id="open-chat" class="button">Open chat</button>
+        </div>
+        <div class="button__group-item">
+          <button type="button" id="close-home" class="button button--cancel">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-chat" class="page__section page__section--narrow las-screen" hidden>
+      <div class="heading--section u-margin-top--20">
+        <h2 class="heading--2">Chat</h2>
+      </div>
+      <p id="chat-status" class="u-text--small u-margin-bottom--10" role="status"></p>
+      <div id="tawk-host" class="las-tawk-host" aria-live="polite">
+        <div id="tawk-embed" class="las-tawk-embed"></div>
+      </div>
+      <div class="button__group u-margin-top--20">
+        <div class="button__group-item">
+          <button type="button" id="back-home" class="button button--cancel">Back</button>
+        </div>
+        <div class="button__group-item">
+          <button type="button" id="close-chat" class="button button--cancel">Close</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+/* __BOOTSTRAP__ */
+__SCRIPT__
+  </script>
+</body>
+</html>

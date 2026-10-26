@@ -1,0 +1,29 @@
+{
+  "manifestVersion": 1,
+  "health": {
+    "path": "/health",
+    "method": "GET"
+  },
+  "requestedCapabilities": [
+    "organisation.read",
+    "users.read"
+  ],
+  "config": {
+    "mode": "native",
+    "browserBaseUrl": null,
+    "externalConfigureUrl": null,
+    "schemaPath": "/config/schema",
+    "getPath": "/config",
+    "putPath": "/config",
+    "quickViewPath": "/ui",
+    "openPresentation": "modal"
+  },
+  "triggers": {
+    "lifecycle": {
+      "setupPath": "/webhooks/atrium/setup",
+      "disconnectPath": "/webhooks/atrium/disconnect"
+    },
+    "schedules": [],
+    "events": []
+  }
+}
