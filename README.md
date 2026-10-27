@@ -37,11 +37,46 @@ Copy [`.env.example`](./.env.example). **Never commit `.env` or real secrets.**
 | `ATRIUM_SETUP_SECRET` | Bootstrap secret for `lifecycle.setup` (Hosting injects) |
 | `ATRIUM_DATA_DIR` | SQLite directory (`./data` local, `/data` Hosting) |
 | `ATRIUM_FRAME_ANCESTORS` / `ATRIUM_PARENT_ORIGIN` | Hosting injects for iframe CSP / postMessage |
-| `TAWK_PROPERTY_ID` | Tawk property id |
-| `TAWK_WIDGET_ID` | Chat widget id |
-| `TAWK_API_KEY` | Secure Mode JavaScript API key (optional; degrade without it) |
+| `TAWK_PROPERTY_ID` | Tawk property id (code default: Julie’s LAS property) |
+| `TAWK_WIDGET_ID` | Chat widget id (code default: Julie’s LAS chat widget) |
+| `TAWK_API_KEY` | Secure Mode JavaScript API key (env-only; degrade without it) |
 
 COHO Public API base URL comes from `lifecycle.setup` (`data.apiBaseUrl`), not from env.
+
+## Hosting secrets / Tawk (Labs → Prod)
+
+There is **no Store UI, Super Admin form, or Hosting console** for custom per-app env today. The provision worker only injects platform vars (`PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` from SM). Third-party secrets such as Tawk must be set by **ops on ECS / Secrets Manager** after the Hosted app is **Ready**.
+
+### Required runtime vars
+
+| Variable | Notes |
+|----------|--------|
+| `TAWK_PROPERTY_ID` | Public embed id. App falls back to `687cb5a73606072bf84a6030` if unset. |
+| `TAWK_WIDGET_ID` | Public embed id. App falls back to `1j0jib5sb` if unset. |
+| `TAWK_API_KEY` | Secure Mode JavaScript API key. **Never commit.** Env/SM only; widget still loads without it (no visitor `login`). |
+
+Do **not** put `TAWK_API_KEY` in Store light/native config, catalogue copy, or the image.
+
+### Labs (ops checklist)
+
+1. Register the Hosted app on Labs Store (GitHub + Dockerfile) and wait until provision state is **Ready**.
+2. Note the app slug / ECS service (Labs naming: `atrium-labs-<slug>`, cluster `AtriumHosting-LABS`, region `eu-west-2`). Browser host is `{slug}.labs.coho.software`.
+3. Add container env on the task definition (preserve existing `ATRIUM_*` / `PORT` / SM `ATRIUM_SETUP_SECRET`):
+   - `TAWK_PROPERTY_ID=687cb5a73606072bf84a6030`
+   - `TAWK_WIDGET_ID=1j0jib5sb`
+   - `TAWK_API_KEY=<from ops vault / project store — never git>`
+4. Prefer mapping `TAWK_API_KEY` from Secrets Manager as an ECS `secrets` entry when IAM allows; plaintext env on Labs is acceptable for dogfood only and must be documented as temporary.
+5. Register a new task definition revision, update the service, wait until stable.
+6. **Re-apply after every Hosted Update / re-provision** — `worker.sh` rewrites the task definition and only injects `ATRIUM_*` / `PORT`. Manual `TAWK_*` is wiped until the provisioner supports custom env.
+7. Enable **Tawk Secure Mode** in Tawk admin before relying on hashed visitor login (see Secure Mode notes below).
+
+### Prod (same checklist before go-live)
+
+1. Confirm Hosted app is Ready on the production Hosting cluster.
+2. Set `TAWK_PROPERTY_ID`, `TAWK_WIDGET_ID`, and `TAWK_API_KEY` on the prod task definition (prefer SM for the API key).
+3. Never commit the API key; rotate if it was ever pasted into chat or a ticket.
+4. Enable Tawk Secure Mode for the property before launch.
+5. Expect the same re-apply after Hosted Update/re-provision until product supports custom Hosting env.
 
 ## Local UI
 
@@ -95,7 +130,7 @@ npm start
 docker build --platform linux/amd64 -t atrium-apps/lettings-advice .
 ```
 
-Hosting injects `ATRIUM_SETUP_SECRET` and Tawk env. Do not bake secrets into the image.
+Hosting injects `ATRIUM_*` / `PORT` only. Ops sets `TAWK_*` on ECS/SM (see **Hosting secrets / Tawk** above). Do not bake secrets into the image.
 
 ## Design
 

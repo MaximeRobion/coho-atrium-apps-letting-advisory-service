@@ -36,3 +36,15 @@ test('readTawkConfig reports Secure Mode only when API key present', () => {
   assert.equal(withoutKey.secureModeEnabled, false);
   assert.equal(withoutKey.apiKey, null);
 });
+
+test('readTawkConfig falls back to LAS property/widget defaults when env unset', () => {
+  const cfg = readTawkConfig({});
+  assert.equal(cfg.propertyId, '687cb5a73606072bf84a6030');
+  assert.equal(cfg.widgetId, '1j0jib5sb');
+  assert.equal(
+    cfg.embedUrl,
+    'https://embed.tawk.to/687cb5a73606072bf84a6030/1j0jib5sb',
+  );
+  assert.equal(cfg.apiKey, null);
+  assert.equal(cfg.secureModeEnabled, false);
+});
