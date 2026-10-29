@@ -27,6 +27,7 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
     `frame-src ${tawkHttps} ${youtubeFrames}`,
     `child-src ${tawkHttps} ${youtubeFrames}`,
     "base-uri 'none'",
-    "form-action 'self'",
+    // Tawk's composer can POST to tawk hosts; 'self' alone drops visitor messages.
+    `form-action 'self' ${tawkHttps}`,
   ].join('; ');
 }
