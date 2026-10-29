@@ -195,11 +195,14 @@
         status = null;
       }
 
-      if (status === 'offline') {
+      var forceOpen = typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN;
+      if (status === 'offline' && !forceOpen) {
         applyTawkOfflineSafetyNet('offline');
         return;
       }
 
+      // FORCE_CHAT_OPEN still calls start() when Tawk reports offline (local dogfood /
+      // empty agent roster); otherwise the composer mounts but never sends.
       try {
         if (typeof window.Tawk_API.start === 'function') {
           window.Tawk_API.start();
