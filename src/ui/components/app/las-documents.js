@@ -173,13 +173,11 @@
   function listRowsHtml(filtered) {
     if (!filtered.length) {
       return (
-        '<div class="form__message form__message--notification u-margin-top--10" id="documents-empty">' +
-        '<div class="form__message-text u-padding--10">' +
+        '<p class="u-text--small u-text-color--grey u-margin-top--10 u-margin-bottom--none" id="documents-empty">' +
         (state.query
           ? 'No documents match "' + escapeHtml(state.query) + '".'
           : 'No documents in this category yet.') +
-        '</div>' +
-        '</div>'
+        '</p>'
       );
     }
 
