@@ -290,6 +290,7 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /documents-root/);
     assert.match(html, /DOCUMENT_CATALOGUE/);
     assert.match(html, /LasDocuments/);
+    assert.doesNotMatch(html, /Guides, free templates, and videos from Lettings Advice Service/);
     assert.doesNotMatch(html, /library-frame/);
     assert.doesNotMatch(html, /lettingadviceservice\.tawk\.help/);
     assert.match(html, /Tawk_API\.embedded/);
@@ -307,6 +308,20 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(html, /id="close-(home|chat|library)"/);
     assert.doesNotMatch(html, /Tawk_API\.login/);
     assert.doesNotMatch(html, /Secure Mode/);
+
+    const scriptBlocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map(
+      (match) => match[1] || '',
+    );
+    const bootstrapScript =
+      scriptBlocks.find((block) => block.includes('DOCUMENT_CATALOGUE')) || '';
+    assert.ok(bootstrapScript, 'expected DOCUMENT_CATALOGUE bootstrap script');
+    const guides = (bootstrapScript.match(/"category":"guides"/g) || []).length;
+    const templates = (bootstrapScript.match(/"category":"templates"/g) || []).length;
+    const videos = (bootstrapScript.match(/"category":"videos"/g) || []).length;
+    assert.equal(guides, 67);
+    assert.equal(templates, 48);
+    assert.equal(videos, 22);
+    assert.doesNotThrow(() => new Function(bootstrapScript));
   });
 });
 

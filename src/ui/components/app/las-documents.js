@@ -127,9 +127,6 @@
       '<div class="heading--section">' +
       '<h2 class="heading--2">Documents</h2>' +
       '</div>' +
-      '<p class="u-text--small u-text-color--grey u-margin-bottom--20">' +
-      'Guides, free templates, and videos from Lettings Advice Service.' +
-      '</p>' +
       '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
       cards +
       '</div>' +
@@ -144,7 +141,7 @@
         '<div class="form__message form__message--notification u-margin-top--10" id="documents-empty">' +
         '<div class="form__message-text u-padding--10">' +
         (state.query
-          ? 'No documents match “‘ + escapeHtml(state.query) + '”.'
+          ? 'No documents match "' + escapeHtml(state.query) + '".'
           : 'No documents in this category yet.') +
         '</div>' +
         '</div>'
