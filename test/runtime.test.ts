@@ -281,10 +281,22 @@ test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async 
     assert.match(csp, /lettingadviceservice\.tawk\.help/);
     const html = await res.text();
     assert.match(html, /Lettings Advice Service/);
-    assert.match(html, /Document library/);
-    assert.match(html, /Open chat/);
-    assert.match(html, /screen-library/);
+    assert.match(html, /nav-library/);
+    assert.match(html, /nav-chat/);
+    assert.match(html, />Library</);
+    assert.match(html, />Chat</);
+    assert.match(html, /panel-library/);
+    assert.match(html, /panel-chat/);
+    assert.match(html, /Tawk_API\.embedded/);
+    assert.match(html, /\[id\^=['"]tawk_/);
+    assert.match(html, /lettingadviceservice\.tawk\.help/);
+    assert.doesNotMatch(html, /Open in new tab/);
+    assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
+    assert.doesNotMatch(html, /Chat ready/);
+    assert.doesNotMatch(html, /id="back-home/);
+    assert.doesNotMatch(html, /id="close-(home|chat|library)"/);
     assert.doesNotMatch(html, /Tawk_API\.login/);
     assert.doesNotMatch(html, /Secure Mode/);
   });
 });
+

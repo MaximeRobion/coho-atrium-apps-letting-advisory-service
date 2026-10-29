@@ -28,46 +28,71 @@
     /* ignore */
   }
 
-  var home = document.getElementById('screen-home');
-  var chat = document.getElementById('screen-chat');
-  var library = document.getElementById('screen-library');
-  var statusEl = document.getElementById('chat-status');
-  var libraryStatusEl = document.getElementById('library-status');
+  var TAB_LIBRARY = 'library';
+  var TAB_CHAT = 'chat';
+  var navLibrary = document.getElementById('nav-library');
+  var navChat = document.getElementById('nav-chat');
+  var panelLibrary = document.getElementById('panel-library');
+  var panelChat = document.getElementById('panel-chat');
+  var chatErrorEl = document.getElementById('chat-error');
   var embedHost = document.getElementById('tawk-embed');
   var libraryFrame = document.getElementById('library-frame');
-  var libraryExternal = document.getElementById('library-open-external');
   var tawkLoaded = false;
   var libraryLoaded = false;
+  var chatLoading = false;
   var DEFAULT_KB_URL = 'https://lettingadviceservice.tawk.help';
 
-  function showHome() {
-    home.hidden = false;
-    chat.hidden = true;
-    library.hidden = true;
+  function tabStorageKey() {
+    return 'las:' + CONNECTION_REFERENCE + ':activeTab';
   }
 
-  function showChat() {
-    home.hidden = true;
-    chat.hidden = false;
-    library.hidden = true;
+  function readStoredTab() {
+    try {
+      var raw = localStorage.getItem(tabStorageKey());
+      if (raw === TAB_CHAT) return TAB_CHAT;
+    } catch (e) {
+      /* private mode / blocked storage */
+    }
+    return TAB_LIBRARY;
   }
 
-  function showLibrary() {
-    home.hidden = true;
-    chat.hidden = true;
-    library.hidden = false;
+  function writeStoredTab(tab) {
+    if (tab !== TAB_LIBRARY && tab !== TAB_CHAT) return;
+    try {
+      localStorage.setItem(tabStorageKey(), tab);
+    } catch (e) {
+      /* ignore */
+    }
   }
 
-  function setStatus(text) {
-    if (statusEl) statusEl.textContent = text || '';
+  function setChatError(text) {
+    if (!chatErrorEl) return;
+    if (text) {
+      chatErrorEl.hidden = false;
+      chatErrorEl.textContent = text;
+    } else {
+      chatErrorEl.hidden = true;
+      chatErrorEl.textContent = '';
+    }
   }
 
-  function setLibraryStatus(text) {
-    if (libraryStatusEl) libraryStatusEl.textContent = text || '';
+  function showTab(tab) {
+    var onChat = tab === TAB_CHAT;
+    writeStoredTab(onChat ? TAB_CHAT : TAB_LIBRARY);
+
+    panelLibrary.hidden = onChat;
+    panelChat.hidden = !onChat;
+    navLibrary.setAttribute('aria-selected', onChat ? 'false' : 'true');
+    navChat.setAttribute('aria-selected', onChat ? 'true' : 'false');
   }
 
+  /**
+   * Tawk embedded mode mounts into the element whose id equals Tawk_API.embedded.
+   * It renames #tawk-embed to #tawk_<propertyId>. Size that host with [id^="tawk_"] CSS
+   * (not #tawk-embed alone) or the widget collapses to the clipped bubble / tawk.link state.
+   */
   function loadTawkWidget(embedUrl) {
-    if (tawkLoaded) return;
+    if (tawkLoaded || !embedHost) return;
     tawkLoaded = true;
 
     var propertyId = embedUrl.split('/')[3] || '';
@@ -86,62 +111,73 @@
     document.body.appendChild(script);
   }
 
-  async function openChat() {
-    showChat();
-    setStatus('Loading chat…');
-
-    var config = await apiGet('/api/tawk/config');
-    if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
-      setStatus(
-        (config.body && config.body.message) ||
-          'Chat is not configured yet. Ask COHO to set TAWK_PROPERTY_ID and TAWK_WIDGET_ID on Hosting.',
-      );
-      return;
-    }
-
-    setStatus('Chat ready.');
-    loadTawkWidget(config.body.embedUrl);
-  }
-
-  async function openLibrary() {
-    showLibrary();
-    setLibraryStatus('Loading document library…');
+  async function ensureLibrary() {
+    if (libraryLoaded && libraryFrame && libraryFrame.getAttribute('src')) return;
 
     var kbUrl = DEFAULT_KB_URL;
-    var config = await apiGet('/api/tawk/config');
-    if (config.ok && config.body && config.body.knowledgeBaseUrl) {
-      kbUrl = config.body.knowledgeBaseUrl;
+    try {
+      var config = await apiGet('/api/tawk/config');
+      if (config.ok && config.body && config.body.knowledgeBaseUrl) {
+        kbUrl = config.body.knowledgeBaseUrl;
+      }
+    } catch (err) {
+      /* keep default KB URL */
     }
 
-    if (libraryExternal) {
-      libraryExternal.href = kbUrl;
-    }
-
-    if (!libraryLoaded && libraryFrame) {
+    if (libraryFrame) {
       libraryFrame.src = kbUrl;
       libraryLoaded = true;
     }
-
-    setLibraryStatus(
-      'Showing the Tawk Knowledge Base below. If the panel is blank (some browsers block the embed), use Open in new tab.',
-    );
   }
 
-  document.getElementById('open-chat').addEventListener('click', function () {
-    openChat().catch(function (err) {
-      setStatus(err && err.message ? err.message : 'Failed to open chat');
-      showChat();
+  async function ensureChat() {
+    if (tawkLoaded || chatLoading) return;
+    chatLoading = true;
+    setChatError('');
+
+    try {
+      var config = await apiGet('/api/tawk/config');
+      if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
+        setChatError(
+          (config.body && config.body.message) ||
+            'Chat is not configured yet. Ask COHO to set TAWK_PROPERTY_ID and TAWK_WIDGET_ID on Hosting.',
+        );
+        return;
+      }
+      loadTawkWidget(config.body.embedUrl);
+    } catch (err) {
+      setChatError(err && err.message ? err.message : 'Failed to open chat');
+    } finally {
+      chatLoading = false;
+    }
+  }
+
+  function openLibraryTab() {
+    showTab(TAB_LIBRARY);
+    ensureLibrary().catch(function () {
+      /* KB iframe still uses default URL */
     });
-  });
-  document.getElementById('open-library').addEventListener('click', function () {
-    openLibrary().catch(function (err) {
-      setLibraryStatus(err && err.message ? err.message : 'Failed to open document library');
-      showLibrary();
+  }
+
+  function openChatTab() {
+    showTab(TAB_CHAT);
+    ensureChat().catch(function (err) {
+      setChatError(err && err.message ? err.message : 'Failed to open chat');
     });
+  }
+
+  navLibrary.addEventListener('click', function (event) {
+    event.preventDefault();
+    openLibraryTab();
   });
-  document.getElementById('back-home').addEventListener('click', showHome);
-  document.getElementById('back-home-library').addEventListener('click', showHome);
-  document.getElementById('close-home').addEventListener('click', closeQuickView);
-  document.getElementById('close-chat').addEventListener('click', closeQuickView);
-  document.getElementById('close-library').addEventListener('click', closeQuickView);
+  navChat.addEventListener('click', function (event) {
+    event.preventDefault();
+    openChatTab();
+  });
+
+  if (readStoredTab() === TAB_CHAT) {
+    openChatTab();
+  } else {
+    openLibraryTab();
+  }
 })();

@@ -8,9 +8,10 @@ Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-se
 
 ## Scope
 
-- **Web app** quick view (`/ui`, `openPresentation: modal`): Home → **Document library** and **Chat**.
-- Chat = Tawk widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (code defaults to Julie’s LAS property/widget).
-- Document library = Tawk Knowledge Base `https://lettingadviceservice.tawk.help` (iframe when framing is allowed; always offer open-in-new-tab).
+- **Web app** quick view (`/ui`, `openPresentation: modal`): tab strip **Library | Chat** (bin-rota style; shell X closes — no footer Back/Close).
+- Chat = Tawk **embedded** widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (code defaults to Julie’s LAS property/widget), full-height host under the Chat tab.
+- Document library = Tawk Knowledge Base iframe `https://lettingadviceservice.tawk.help` (full height under the Library tab).
+
 - **Entitlement = Store install** (listed free until commercial terms + Store billing). No in-app billing, cancel, or tracking UI.
 - **Secure Mode / visitor login is out** — another team shares the same Tawk property. Do **not** enable Secure Mode in Tawk admin for this app. The app does **not** call `Tawk_API.login`. `TAWK_API_KEY` is optional/unused; hash helpers remain as dead code only.
 

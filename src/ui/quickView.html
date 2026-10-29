@@ -12,74 +12,35 @@
   <svg xmlns="http://www.w3.org/2000/svg" hidden>
     <symbol id="icon-chat" viewBox="0 0 30 30"><path d="M4 6c0-1.1.9-2 2-2h18c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H12l-5.2 4.1c-.7.5-1.8 0-1.8-.9V20H6c-1.1 0-2-.9-2-2V6zm3 3v2h16V9H7zm0 4v2h10v-2H7z"/></symbol>
     <symbol id="icon-library" viewBox="0 0 30 30"><path d="M6 5h4v20H6V5zm6 0h4v20h-4V5zm6 2.2 4 1.2v15.4l-4-1.2V7.2zM4 25h22v2H4v-2z"/></symbol>
-    <symbol id="icon-arrow-left" viewBox="0 0 30 30"><path d="M18.7 6.3c.7.7.7 1.8 0 2.5L13.5 14l5.2 5.2c.7.7.7 1.8 0 2.5-.7.7-1.8.7-2.5 0l-6.5-6.5c-.7-.7-.7-1.8 0-2.5l6.5-6.5c.7-.6 1.8-.6 2.5.1z"/></symbol>
-    <symbol id="icon-cross" viewBox="0 0 30 30"><path d="m10.4142136 7.58578644 4.5857864 4.58521356 4.5857864-4.58521356c.7399408-.73994077 1.915425-.77888502 2.7012124-.11683275l.1272148.11683275c.7810485.78104858.7810485 2.04737854 0 2.82842716l-4.5852136 4.5857864 4.5852136 4.5857864c.7810485.7810486.7810485 2.0473786 0 2.8284272-.7810486.7810485-2.0473786.7810485-2.8284272 0l-4.5857864-4.5852136-4.5857864 4.5852136c-.7399408.7399407-1.91542496.778885-2.70121239.1168327l-.12721477-.1168327c-.78104859-.7810486-.78104859-2.0473786 0-2.8284272l4.58521356-4.5857864-4.58521356-4.5857864c-.78104859-.78104862-.78104859-2.04737858 0-2.82842716.78104858-.78104859 2.04737854-.78104859 2.82842716 0z"/></symbol>
   </svg>
 
-  <main class="u-padding-left--20 u-padding-right--20 u-padding-bottom--20">
-    <section id="screen-home" class="page__section page__section--narrow">
-      <h1 class="heading--1 u-margin-top--20 u-margin-bottom--10">Lettings Advice Service</h1>
-      <p class="lede u-margin-bottom--20">
-        Browse Julie’s lettings advice documents and chat with the advice team from COHO. Store install grants access; there is no in-app billing in this release.
-      </p>
-      <div class="button__group">
-        <div class="button__group-item">
-          <button type="button" id="open-library" class="button">Document library</button>
-        </div>
-        <div class="button__group-item">
-          <button type="button" id="open-chat" class="button button--secondary">Open chat</button>
-        </div>
-        <div class="button__group-item">
-          <button type="button" id="close-home" class="button button--cancel">Close</button>
+  <main id="las-shell">
+    <div id="las-tabs" aria-label="Lettings Advice sections">
+      <div id="las-tab-chrome">
+        <div id="las-tablist" role="tablist">
+          <a href="javascript:void(0);" role="tab" id="nav-library" aria-controls="panel-library" aria-selected="true">Library</a>
+          <a href="javascript:void(0);" role="tab" id="nav-chat" aria-controls="panel-chat" aria-selected="false">Chat</a>
         </div>
       </div>
-    </section>
-
-    <section id="screen-library" class="page__section page__section--narrow" hidden>
-      <div class="heading--section u-margin-top--20">
-        <h2 class="heading--2">Document library</h2>
+      <div id="las-tab-panes">
+        <section id="panel-library" role="tabpanel" aria-labelledby="nav-library">
+          <div id="library-host">
+            <iframe
+              id="library-frame"
+              title="Lettings Advice Service document library"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </section>
+        <section id="panel-chat" role="tabpanel" aria-labelledby="nav-chat" hidden>
+          <p id="chat-error" class="u-text--small u-margin-bottom--10" role="alert" hidden></p>
+          <div id="tawk-host">
+            <div id="tawk-embed"></div>
+          </div>
+        </section>
       </div>
-      <p id="library-status" class="u-text--small u-margin-bottom--10" role="status"></p>
-      <div class="button__group u-margin-bottom--10">
-        <div class="button__group-item">
-          <a id="library-open-external" class="button button--secondary" href="https://lettingadviceservice.tawk.help" target="_blank" rel="noopener noreferrer">Open in new tab</a>
-        </div>
-      </div>
-      <div id="library-host">
-        <iframe
-          id="library-frame"
-          title="Lettings Advice Service document library"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-      </div>
-      <div class="button__group u-margin-top--20">
-        <div class="button__group-item">
-          <button type="button" id="back-home-library" class="button button--cancel">Back</button>
-        </div>
-        <div class="button__group-item">
-          <button type="button" id="close-library" class="button button--cancel">Close</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="screen-chat" class="page__section page__section--narrow" hidden>
-      <div class="heading--section u-margin-top--20">
-        <h2 class="heading--2">Chat</h2>
-      </div>
-      <p id="chat-status" class="u-text--small u-margin-bottom--10" role="status"></p>
-      <div id="tawk-host">
-        <div id="tawk-embed"></div>
-      </div>
-      <div class="button__group u-margin-top--20">
-        <div class="button__group-item">
-          <button type="button" id="back-home" class="button button--cancel">Back</button>
-        </div>
-        <div class="button__group-item">
-          <button type="button" id="close-chat" class="button button--cancel">Close</button>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
   <script>
