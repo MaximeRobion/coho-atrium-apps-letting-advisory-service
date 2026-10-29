@@ -8,12 +8,18 @@ function applyTheme(theme) {
   document.body.classList.toggle('coho__dark', next === 'dark');
 }
 
-function closeQuickView() {
+function postToParent(message) {
+  // Top-level /ui dogfood has no Store shell — skip (avoids localhost vs 127.0.0.1 noise).
+  if (window.parent === window) return;
   try {
-    parent.postMessage({ type: 'atrium.quickView.close' }, PARENT_ORIGIN);
+    parent.postMessage(message, PARENT_ORIGIN);
   } catch (err) {
     /* ignore */
   }
+}
+
+function closeQuickView() {
+  postToParent({ type: 'atrium.quickView.close' });
 }
 
 function apiHeaders() {
