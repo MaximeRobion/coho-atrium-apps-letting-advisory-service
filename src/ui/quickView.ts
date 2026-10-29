@@ -51,11 +51,18 @@ export function quickViewHtml(opts: {
   const appCss = readFileSync(join(componentsDir, 'app', 'app.css'), 'utf8');
   const clientJs = readOrderedJs(JS_ORDER);
 
+  // Local dogfood only: ATRIUM_DEV_FORCE_CHAT_OPEN=1 with ATRIUM_DEV_MODE skips hours/offline gate.
+  const forceChatOpen =
+    process.env.ATRIUM_DEV_MODE === '1' &&
+    process.env.NODE_ENV === 'development' &&
+    process.env.ATRIUM_DEV_FORCE_CHAT_OPEN === '1';
+
   const bootstrap =
     `const CONNECTION_REFERENCE = ${JSON.stringify(opts.connectionReference)};\n` +
     `const USAGE_TOKEN = ${JSON.stringify(opts.usageToken)};\n` +
     `const PARENT_ORIGIN = ${JSON.stringify(parentOrigin())};\n` +
-    `const DOCUMENT_CATALOGUE = ${JSON.stringify(DOCUMENT_CATALOGUE)};\n`;
+    `const DOCUMENT_CATALOGUE = ${JSON.stringify(DOCUMENT_CATALOGUE)};\n` +
+    `const FORCE_CHAT_OPEN = ${forceChatOpen ? 'true' : 'false'};\n`;
 
   if (!clientJs.includes(BOOTSTRAP_MARKER)) {
     throw new Error('las-app.js missing bootstrap marker');

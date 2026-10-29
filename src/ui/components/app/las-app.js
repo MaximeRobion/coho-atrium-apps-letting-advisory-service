@@ -140,6 +140,7 @@
   }
 
   function applyTawkOfflineSafetyNet(status) {
+    if (typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN) return;
     if (status !== 'offline') return;
     tawkForcedOffline = true;
     var hours = getChatHoursStatus();
