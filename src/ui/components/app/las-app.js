@@ -1,5 +1,3 @@
-/* __BOOTSTRAP__ */
-
 (function () {
   // Strip usage token from the address bar after bootstrap (token stays in memory).
   try {

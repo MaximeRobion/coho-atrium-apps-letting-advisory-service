@@ -1,3 +1,5 @@
+/* __BOOTSTRAP__ */
+
 /* Shared bootstrap helpers for the quick view. */
 
 function applyTheme(theme) {

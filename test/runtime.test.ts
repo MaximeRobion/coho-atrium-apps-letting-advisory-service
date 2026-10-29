@@ -321,6 +321,14 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.equal(guides, 67);
     assert.equal(templates, 48);
     assert.equal(videos, 22);
+    const catalogueAssign = bootstrapScript.indexOf('const DOCUMENT_CATALOGUE =');
+    const documentsModule = bootstrapScript.indexOf('Documents tab:');
+    assert.ok(catalogueAssign >= 0, 'expected DOCUMENT_CATALOGUE assign');
+    assert.ok(documentsModule >= 0, 'expected las-documents module');
+    assert.ok(
+      catalogueAssign < documentsModule,
+      'DOCUMENT_CATALOGUE must be injected before las-documents.js runs (otherwise Documents stays empty)',
+    );
     assert.doesNotThrow(() => new Function(bootstrapScript));
   });
 });
