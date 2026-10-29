@@ -315,6 +315,9 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /Watch now/);
     assert.match(html, /Watch on YouTube/);
     assert.match(html, /youtube-nocookie\.com\/embed\//);
+    assert.match(html, /icon-cross/);
+    assert.match(html, /documents-row-player/);
+    assert.doesNotMatch(html, /documents-video-host/);
     // Markup must not use coloured filter variants (class names still appear in inlined coho.css).
     assert.doesNotMatch(
       html,
