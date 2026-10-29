@@ -20,11 +20,7 @@
     }
   });
 
-  try {
-    parent.postMessage({ type: 'atrium.quickView.ready' }, PARENT_ORIGIN);
-  } catch (err) {
-    /* ignore */
-  }
+  postToParent({ type: 'atrium.quickView.ready' });
 
   var TAB_DOCUMENTS = 'documents';
   var TAB_CHAT = 'chat';
