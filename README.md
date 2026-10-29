@@ -110,7 +110,11 @@ Do **not** enable Secure Mode in Tawk admin for this property (shared with anoth
 
 ## CSP
 
-`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to`, `*.tawk.to` (including `wss://`), and the Knowledge Base host `lettingadviceservice.tawk.help` / `*.tawk.help`. Keys-style tight CSP would block chat and the library iframe.
+`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `style-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to`, `*.tawk.to` (including `wss://` on connect), and the Knowledge Base host `lettingadviceservice.tawk.help` / `*.tawk.help`. `style-src` must include the Tawk hosts so widget CSS (`max-widget.css`) loads. `frame-src` / `child-src` also allow YouTube embeds used in KB articles. Keys-style tight CSP would block chat and the library iframe.
+
+### postMessage parent origin
+
+The app posts `atrium.quickView.ready` / `close` and accepts `atrium.quickView.theme` only against `PARENT_ORIGIN` from Hosting `ATRIUM_PARENT_ORIGIN` (see `src/ui/quickView.ts`). App code does not hard-code `applabs.coho.management`. If the console shows a postMessage origin mismatch between the Store shell (`applabs.coho.management`) and the app host (`letting-advice*.labs.coho.software`), that is a Hosting / Store `ATRIUM_PARENT_ORIGIN` injection issue — out of app scope unless the wrong origin is baked into this repo.
 
 ## Dockerfile
 
