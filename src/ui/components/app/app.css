@@ -245,7 +245,7 @@ body.coho__dark #las-tablist [role='tab']:hover {
 
 #documents-table tr.is-playing {
   flex-wrap: wrap !important;
-  background-color: var(--color-cyan-light, #e8f5fb);
+  background-color: var(--color-white, #fff);
 }
 
 #documents-table .documents-row-player {
