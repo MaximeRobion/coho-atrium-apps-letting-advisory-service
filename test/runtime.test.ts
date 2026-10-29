@@ -298,8 +298,33 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /getChatHoursStatus/);
     assert.match(html, /onStatusChange/);
     assert.match(html, /chat-out-of-hours/);
-    assert.match(html, /Chat is out of hours/);
+    assert.doesNotMatch(html, /Chat is out of hours/);
+    assert.match(html, /We're currently offline/);
     assert.match(html, /Europe\/London/);
+    assert.doesNotMatch(html, /Expert property guides and resources/);
+    assert.doesNotMatch(html, /Free templates and letters/);
+    assert.doesNotMatch(html, /Video tutorials from Lettings Advice Service/);
+    assert.doesNotMatch(html, /<h2 class="heading--2">Documents<\/h2>/);
+    assert.doesNotMatch(html, /id="documents-breadcrumb"/);
+    assert.doesNotMatch(html, /id="documents-back"/);
+    assert.doesNotMatch(html, />Filter</);
+    assert.match(html, /grid-span-sm-4/);
+    assert.match(html, /aria-current="true"/);
+    assert.match(html, /documents-row-title/);
+    assert.match(html, /'Watch<\/button>'/);
+    assert.doesNotMatch(html, /Watch now/);
+    assert.doesNotMatch(html, /Watch on YouTube/);
+    assert.doesNotMatch(html, /data-action="download"/);
+    assert.match(html, /youtube-nocookie\.com\/embed\//);
+    assert.match(html, /icon-cross/);
+    assert.match(html, /documents-row-player/);
+    assert.doesNotMatch(html, /documents-video-host/);
+    assert.doesNotMatch(html, /<thead>/);
+    // Markup must not use coloured filter variants (class names still appear in inlined coho.css).
+    assert.doesNotMatch(
+      html,
+      /class="[^"]*card__filters--(?:action|progress|active)[^"]*"/,
+    );
     assert.match(html, /\[id\^=['"]tawk_/);
     assert.doesNotMatch(html, /Open in new tab/);
     assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
@@ -321,6 +346,14 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.equal(guides, 67);
     assert.equal(templates, 48);
     assert.equal(videos, 22);
+    const catalogueAssign = bootstrapScript.indexOf('const DOCUMENT_CATALOGUE =');
+    const documentsModule = bootstrapScript.indexOf('Documents tab:');
+    assert.ok(catalogueAssign >= 0, 'expected DOCUMENT_CATALOGUE assign');
+    assert.ok(documentsModule >= 0, 'expected las-documents module');
+    assert.ok(
+      catalogueAssign < documentsModule,
+      'DOCUMENT_CATALOGUE must be injected before las-documents.js runs (otherwise Documents stays empty)',
+    );
     assert.doesNotThrow(() => new Function(bootstrapScript));
   });
 });

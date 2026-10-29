@@ -1,5 +1,3 @@
-/* __BOOTSTRAP__ */
-
 (function () {
   // Strip usage token from the address bar after bootstrap (token stays in memory).
   try {
@@ -142,6 +140,7 @@
   }
 
   function applyTawkOfflineSafetyNet(status) {
+    if (typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN) return;
     if (status !== 'offline') return;
     tawkForcedOffline = true;
     var hours = getChatHoursStatus();

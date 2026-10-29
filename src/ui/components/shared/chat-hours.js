@@ -59,6 +59,14 @@ function getLondonWallParts(now) {
 }
 
 function getChatHoursStatus(now) {
+  if (typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN) {
+    return {
+      isOpen: true,
+      statusText: "We're online now",
+      nextChangeText: 'dev force-open',
+    };
+  }
+
   var instant = now || new Date();
   var wall = getLondonWallParts(instant);
   var hours = CHAT_HOURS_SCHEDULE[wall.dayName];

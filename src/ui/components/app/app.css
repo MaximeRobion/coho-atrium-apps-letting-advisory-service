@@ -145,6 +145,158 @@ body.coho__dark #las-tablist [role='tab']:hover {
   box-sizing: border-box;
 }
 
+/* coho.css gives .page__section 3.75rem bottom at ≥48rem and only resets top for --narrow */
+#documents-root .page__section--narrow,
+#chat-out-of-hours .page__section--narrow {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Category filters: white tile, COHO blue type; 3-up from sm (35rem), stack on mobile.
+   Scoped by id so check:design never sees app-only classes. */
+#documents-category-grid .card.card__filters {
+  background-color: var(--color-white, #fff);
+  color: var(--color-blue, #293b5b);
+  border: 2px solid transparent;
+  box-shadow: 0 0.125rem 0.625rem 0 rgba(0, 0, 0, 0.12);
+  padding: 0.75rem 0.5rem;
+  justify-content: center;
+  min-height: 0;
+  height: auto;
+}
+
+#documents-category-grid .card.card__filters .card__count,
+#documents-category-grid .card.card__filters .card__title,
+#documents-category-grid .card.card__filters:hover .card__count,
+#documents-category-grid .card.card__filters:hover .card__title {
+  color: var(--color-blue, #293b5b);
+}
+
+#documents-category-grid .card.card__filters .card__count {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+#documents-category-grid .card.card__filters:hover {
+  box-shadow: 0 0.35rem 0.85rem 0 rgba(0, 0, 0, 0.14);
+  color: var(--color-blue, #293b5b);
+}
+
+#documents-category-grid .card.card__filters[aria-current='true'] {
+  border-color: var(--color-blue, #293b5b);
+}
+
+#documents-category-grid .card.card__filters.card__filters--inactive {
+  background-color: var(--color-grey-xxlight, #f7f7f7);
+  color: var(--color-grey, #5f5f5f);
+  box-shadow: none;
+}
+
+#documents-category-grid .card.card__filters.card__filters--inactive .card__count,
+#documents-category-grid .card.card__filters.card__filters--inactive .card__title {
+  color: var(--color-grey, #5f5f5f);
+}
+
+/* Document rows: bottom divider (like desktop narrow table); stack on mobile */
+#documents-table.compact__table tr {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+  padding: 0.75rem 0;
+  border: 0;
+  border-radius: 0;
+  border-top: 0.0625rem solid rgba(var(--color-black-rgb, 38, 38, 38), 0.1);
+}
+
+#documents-table.compact__table tbody tr:first-child {
+  border-top: 0;
+}
+
+#documents-table.compact__table tr td {
+  font-size: 1rem;
+}
+
+#documents-table .documents-row-title {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  min-width: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#documents-table .documents-row-actions {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  text-align: left;
+}
+
+#documents-table .documents-row-actions .button__group {
+  justify-content: flex-start;
+}
+
+#documents-table .documents-row-actions .button {
+  font-size: 0.9375rem;
+}
+
+#documents-table tr.is-playing {
+  flex-wrap: wrap !important;
+  background-color: var(--color-white, #fff);
+}
+
+#documents-table .documents-row-player {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  padding-top: 0.5rem;
+}
+
+#documents-table .documents-video-frame {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: var(--color-black, #262626);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+#documents-table .documents-video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (min-width: 48rem) {
+  #documents-table.compact__table tr {
+    flex-wrap: nowrap;
+    padding: 0.625rem 0;
+  }
+
+  #documents-table.compact__table tr.is-playing {
+    flex-wrap: wrap !important;
+  }
+
+  #documents-table .documents-row-title {
+    flex: 1 1 auto !important;
+    width: auto !important;
+  }
+
+  #documents-table .documents-row-actions {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    text-align: right;
+  }
+
+  #documents-table .documents-row-actions .button__group {
+    justify-content: flex-end;
+  }
+}
+
 #tawk-embed,
 #tawk-host [id^='tawk_'] {
   display: block;

@@ -1,5 +1,5 @@
 /**
- * Documents tab: category cards → searchable list with View / Download.
+ * Documents tab: category filter cards + searchable list.
  * Expects DOCUMENT_CATALOGUE + helpers from bootstrap / documents-helpers.js.
  */
 (function () {
@@ -11,33 +11,40 @@
       ? DOCUMENT_CATALOGUE
       : [];
 
+  var CATS = ['guides', 'templates', 'videos'];
+
   var state = {
-    view: 'categories',
-    category: null,
+    category: firstCategoryWithDocs(),
     query: '',
+    playingVideoId: null,
   };
+  var searchDebounceTimer = null;
+
+  function clearSearchDebounce() {
+    if (searchDebounceTimer) {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = null;
+    }
+  }
+
+  function applySearchFromInput(input) {
+    state.query = (input && input.value) || '';
+    refreshListResults();
+  }
+
+  function firstCategoryWithDocs() {
+    for (var i = 0; i < CATS.length; i++) {
+      if (countDocumentsByCategory(catalogue, CATS[i]) > 0) return CATS[i];
+    }
+    return CATS[0];
+  }
 
   function categoryMeta(category) {
     var labels = DOCUMENT_CATEGORY_LABELS || {};
-    var count = countDocumentsByCategory(catalogue, category);
-    var variant =
-      category === 'guides'
-        ? 'card__filters--action'
-        : category === 'templates'
-          ? 'card__filters--progress'
-          : 'card__filters--active';
-    var description =
-      category === 'guides'
-        ? 'Expert property guides and resources'
-        : category === 'templates'
-          ? 'Free templates and letters'
-          : 'Video tutorials from Lettings Advice Service';
     return {
       category: category,
       label: labels[category] || category,
-      count: count,
-      variant: variant,
-      description: description,
+      count: countDocumentsByCategory(catalogue, category),
     };
   }
 
@@ -70,124 +77,164 @@
     return escapeHtml(value).replace(/'/g, '&#39;');
   }
 
-  function bindCategoryCards() {
-    root.querySelectorAll('[data-category]').forEach(function (el) {
-      el.addEventListener('click', function (event) {
-        event.preventDefault();
-        if (el.getAttribute('aria-disabled') === 'true') return;
-        var category = el.getAttribute('data-category');
-        if (!category) return;
-        state.view = 'list';
-        state.category = category;
-        state.query = '';
-        render();
-      });
-    });
+  function filterCardsHtml() {
+    return CATS.map(function (cat) {
+      var meta = categoryMeta(cat);
+      var inactive = meta.count === 0;
+      var isActive = !inactive && state.category === meta.category;
+      var classes = 'card card__filters' + (inactive ? ' card__filters--inactive' : '');
+      var attrs = inactive
+        ? 'aria-disabled="true" tabindex="-1"'
+        : 'href="javascript:void(0);" data-category="' +
+          meta.category +
+          '"' +
+          (isActive ? ' aria-current="true"' : '');
+      var tag = inactive ? 'div' : 'a';
+      return (
+        '<div class="grid-span-12 grid-span-sm-4">' +
+        '<' +
+        tag +
+        ' class="' +
+        classes +
+        '" ' +
+        attrs +
+        '>' +
+        '<div class="card__count">' +
+        meta.count +
+        '</div>' +
+        '<div class="card__title">' +
+        meta.label +
+        '</div>' +
+        '</' +
+        tag +
+        '>' +
+        '</div>'
+      );
+    }).join('');
   }
 
-  function renderCategories() {
-    var cats = ['guides', 'templates', 'videos'];
-    var cards = cats
-      .map(function (cat) {
-        var meta = categoryMeta(cat);
-        var inactive = meta.count === 0;
-        var variant = inactive ? 'card__filters--inactive' : meta.variant;
-        var attrs = inactive
-          ? 'aria-disabled="true" tabindex="-1"'
-          : 'href="javascript:void(0);" data-category="' + meta.category + '"';
-        var tag = inactive ? 'div' : 'a';
+  function rowActionsHtml(item) {
+    var hasUrl = !!(item.url && String(item.url).trim());
+    if (!hasUrl) {
+      return '<span class="u-text--small u-text-color--grey">Link pending</span>';
+    }
+
+    if (item.category === 'videos') {
+      if (state.playingVideoId === item.id) {
         return (
-          '<div class="grid-span-12 grid-span-sm-6 grid-span-md-4">' +
-          '<' +
-          tag +
-          ' class="card card__filters ' +
-          variant +
-          '" ' +
-          attrs +
-          '>' +
-          '<div class="card__count">' +
-          meta.count +
-          '</div>' +
-          '<div class="card__title">' +
-          meta.label +
-          '</div>' +
-          '</' +
-          tag +
-          '>' +
-          '<p class="u-text--small u-text-color--grey u-margin-top--10">' +
-          meta.description +
-          '</p>' +
+          '<div class="button__group-item">' +
+          '<button type="button" class="button button--ghost button--small button--icon button--icon-only" data-action="watch-close" data-id="' +
+          escapeAttr(item.id) +
+          '" aria-label="Close video">' +
+          '<span class="icon" aria-hidden="true"><svg class="icon-cross"><use href="#icon-cross"></use></svg></span>' +
+          '</button>' +
           '</div>'
         );
-      })
-      .join('');
-
-    root.innerHTML =
-      '<section class="page__section page__section--narrow">' +
-      '<div class="heading--section">' +
-      '<h2 class="heading--2">Documents</h2>' +
-      '</div>' +
-      '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
-      cards +
-      '</div>' +
-      '</section>';
-
-    bindCategoryCards();
-  }
-
-  function listRowsHtml(filtered) {
-    if (!filtered.length) {
+      }
+      if (!youtubeEmbedUrl(item.url)) {
+        return '<span class="u-text--small u-text-color--grey">Link pending</span>';
+      }
       return (
-        '<div class="form__message form__message--notification u-margin-top--10" id="documents-empty">' +
-        '<div class="form__message-text u-padding--10">' +
-        (state.query
-          ? 'No documents match "' + escapeHtml(state.query) + '".'
-          : 'No documents in this category yet.') +
-        '</div>' +
+        '<div class="button__group-item">' +
+        '<button type="button" class="button button--ghost button--small button--icon" data-action="watch-now" data-id="' +
+        escapeAttr(item.id) +
+        '">' +
+        '<span class="icon" aria-hidden="true"><svg class="icon-video"><use href="#icon-video"></use></svg></span>' +
+        'Watch</button>' +
         '</div>'
       );
     }
 
     return (
+      '<div class="button__group-item">' +
+      '<button type="button" class="button button--ghost button--small" data-action="view" data-id="' +
+      escapeAttr(item.id) +
+      '">View</button>' +
+      '</div>'
+    );
+  }
+
+  function inlineVideoHtml(item) {
+    var embed = youtubeEmbedUrl(item.url);
+    if (!embed) return '';
+    return (
+      '<td class="documents-row-player" colspan="2">' +
+      '<div class="documents-video-frame" id="documents-video-player">' +
+      '<iframe title="' +
+      escapeAttr(item.title) +
+      '" src="' +
+      escapeAttr(embed) +
+      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>' +
+      '</div>' +
+      '</td>'
+    );
+  }
+
+  function listRowsHtml(filtered) {
+    if (!filtered.length) {
+      return (
+        '<p class="u-text--small u-text-color--grey u-margin-top--10 u-margin-bottom--none" id="documents-empty">' +
+        (state.query
+          ? 'No documents match "' + escapeHtml(state.query) + '".'
+          : 'No documents in this category yet.') +
+        '</p>'
+      );
+    }
+
+    return (
       '<table class="compact__table compact__table--narrow" id="documents-table">' +
-      '<thead><tr>' +
-      '<th class="width-f-350 one-line">Title</th>' +
-      '<th class="width-f-100 u-text-align--right">Actions</th>' +
-      '</tr></thead><tbody>' +
+      '<tbody>' +
       filtered
         .map(function (item) {
-          var hasUrl = !!(item.url && String(item.url).trim());
-          var viewBtn = hasUrl
-            ? '<div class="button__group-item">' +
-              '<button type="button" class="button button--secondary button--tiny" data-action="view" data-id="' +
-              escapeAttr(item.id) +
-              '">View</button>' +
-              '</div>'
-            : '';
-          var downloadBtn = hasUrl
-            ? '<div class="button__group-item">' +
-              '<button type="button" class="button button--ghost button--tiny" data-action="download" data-id="' +
-              escapeAttr(item.id) +
-              '">Download</button>' +
-              '</div>'
-            : '<span class="u-text--small u-text-color--grey">Link pending</span>';
+          var playing = state.playingVideoId === item.id;
           return (
-            '<tr>' +
-            '<td class="width-f-350 one-line">' +
+            '<tr' +
+            (playing ? ' class="is-playing"' : '') +
+            '>' +
+            '<td class="documents-row-title">' +
             escapeHtml(item.title) +
             '</td>' +
-            '<td class="width-f-100 u-text-align--right">' +
+            '<td class="documents-row-actions u-text-align--right">' +
             '<div class="button__group u-margin-bottom--none u-flex--end">' +
-            viewBtn +
-            downloadBtn +
+            rowActionsHtml(item) +
             '</div>' +
             '</td>' +
+            (playing ? inlineVideoHtml(item) : '') +
             '</tr>'
           );
         })
         .join('') +
       '</tbody></table>'
     );
+  }
+
+  function bindCategoryCards() {
+    root.querySelectorAll('[data-category]').forEach(function (el) {
+      el.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (el.getAttribute('aria-disabled') === 'true') return;
+        var category = el.getAttribute('data-category');
+        if (!category || category === state.category) return;
+        state.category = category;
+        state.query = '';
+        state.playingVideoId = null;
+        render();
+      });
+    });
+  }
+
+  function bindVideoPlayer() {
+    var player = document.getElementById('documents-video-player');
+    if (player && typeof player.scrollIntoView === 'function') {
+      player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  function paintResults(filtered) {
+    var results = document.getElementById('documents-results');
+    if (results) results.innerHTML = listRowsHtml(filtered);
+    bindListActions(filtered);
+    bindVideoPlayer();
   }
 
   function bindListActions(filtered) {
@@ -201,64 +248,53 @@
         var action = btn.getAttribute('data-action');
         var item = byId[id];
         if (!item) return;
-        openUrl(item.url, action === 'download');
+        if (action === 'watch-now') {
+          state.playingVideoId = item.id;
+          paintResults(filtered);
+          return;
+        }
+        if (action === 'watch-close') {
+          state.playingVideoId = null;
+          paintResults(filtered);
+          return;
+        }
+        openUrl(item.url, false);
       });
     });
   }
 
   function refreshListResults() {
-    var category = state.category;
-    var inCategory = filterDocumentsByCategory(catalogue, category);
+    var inCategory = filterDocumentsByCategory(catalogue, state.category);
     var filtered = searchDocumentsByTitle(inCategory, state.query);
-    var results = document.getElementById('documents-results');
-    if (!results) return filtered;
-    results.innerHTML = listRowsHtml(filtered);
-    bindListActions(filtered);
+    if (
+      state.playingVideoId &&
+      !filtered.some(function (item) {
+        return item.id === state.playingVideoId;
+      })
+    ) {
+      state.playingVideoId = null;
+    }
+    paintResults(filtered);
     return filtered;
   }
 
-  function renderList() {
-    var category = state.category;
-    var meta = categoryMeta(category);
-    var inCategory = filterDocumentsByCategory(catalogue, category);
+  function render() {
+    var inCategory = filterDocumentsByCategory(catalogue, state.category);
     var filtered = searchDocumentsByTitle(inCategory, state.query);
+
+    clearSearchDebounce();
 
     root.innerHTML =
       '<section class="page__section page__section--narrow">' +
-      '<div class="heading--section heading--has-button">' +
-      '<h2 class="heading--2">' +
-      escapeHtml(meta.label) +
-      '</h2>' +
-      '<div class="button__group">' +
-      '<div class="button__group-item">' +
-      '<button type="button" class="button button--secondary button--small button--icon" id="documents-back">' +
-      '<span class="icon" aria-hidden="true"><svg class="icon-arrow-left"><use href="#icon-arrow-left"></use></svg></span>' +
-      'Documents' +
-      '</button>' +
+      '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
+      filterCardsHtml() +
       '</div>' +
-      '</div>' +
-      '</div>' +
-      '<p class="u-text--small u-text-color--grey u-margin-bottom--10" id="documents-breadcrumb">' +
-      '<a href="javascript:void(0);" id="documents-crumb-root">Documents</a>' +
-      ' / ' +
-      escapeHtml(meta.label) +
-      '</p>' +
-      '<form class="form form--inline form--slimmer form--full-width" id="documents-search-form" novalidate>' +
-      '<div class="form__grid form__grid-2--small form__grid-4--medium">' +
+      '<form class="form form--inline form--slimmer form--full-width u-margin-top--10" id="documents-search-form" novalidate>' +
+      '<div class="form__grid">' +
       '<div class="form__grid-element">' +
-      '<input id="documents-search" type="text" placeholder="Search by name" aria-label="Search by name" value="' +
+      '<input id="documents-search" type="search" placeholder="Search by name" aria-label="Search by name" value="' +
       escapeAttr(state.query) +
       '">' +
-      '</div>' +
-      '<div class="form__grid-element">' +
-      '<div class="button__group u-flex--end">' +
-      '<div class="button__group-item">' +
-      '<button type="submit" class="button button--small button--secondary button--icon">' +
-      '<span class="icon" aria-hidden="true"><svg class="icon-find"><use href="#icon-find"></use></svg></span>' +
-      'Filter' +
-      '</button>' +
-      '</div>' +
-      '</div>' +
       '</div>' +
       '</div>' +
       '</form>' +
@@ -267,39 +303,31 @@
       '</div>' +
       '</section>';
 
-    function goRoot(event) {
-      if (event) event.preventDefault();
-      state.view = 'categories';
-      state.category = null;
-      state.query = '';
-      render();
-    }
-
-    var back = document.getElementById('documents-back');
-    var crumb = document.getElementById('documents-crumb-root');
-    if (back) back.addEventListener('click', goRoot);
-    if (crumb) crumb.addEventListener('click', goRoot);
+    bindCategoryCards();
 
     var form = document.getElementById('documents-search-form');
     var input = document.getElementById('documents-search');
     if (form && input) {
       form.addEventListener('submit', function (event) {
         event.preventDefault();
-        state.query = input.value || '';
-        refreshListResults();
+        clearSearchDebounce();
+        applySearchFromInput(input);
+      });
+      input.addEventListener('blur', function () {
+        clearSearchDebounce();
+        applySearchFromInput(input);
       });
       input.addEventListener('input', function () {
-        state.query = input.value || '';
-        refreshListResults();
+        clearSearchDebounce();
+        searchDebounceTimer = setTimeout(function () {
+          searchDebounceTimer = null;
+          applySearchFromInput(input);
+        }, 500);
       });
     }
 
     bindListActions(filtered);
-  }
-
-  function render() {
-    if (state.view === 'list' && state.category) renderList();
-    else renderCategories();
+    bindVideoPlayer();
   }
 
   window.LasDocuments = {

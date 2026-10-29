@@ -35,3 +35,38 @@ var DOCUMENT_CATEGORY_LABELS = {
   templates: 'Templates',
   videos: 'Videos',
 };
+
+/** Extract a YouTube video id from watch / youtu.be / shorts / embed URLs. */
+function youtubeVideoId(url) {
+  var raw = String(url || '').trim();
+  if (!raw) return '';
+  try {
+    var parsed = new URL(raw);
+    var host = (parsed.hostname || '').replace(/^www\./, '').toLowerCase();
+    if (host === 'youtu.be') {
+      return (parsed.pathname || '').split('/').filter(Boolean)[0] || '';
+    }
+    if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+      if (parsed.searchParams.get('v')) return parsed.searchParams.get('v') || '';
+      var parts = (parsed.pathname || '').split('/').filter(Boolean);
+      if (parts[0] === 'shorts' || parts[0] === 'embed' || parts[0] === 'live') {
+        return parts[1] || '';
+      }
+    }
+  } catch (err) {
+    /* ignore invalid URL */
+  }
+  return '';
+}
+
+function youtubeEmbedUrl(url) {
+  var id = youtubeVideoId(url);
+  if (!id) return '';
+  return 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?rel=0';
+}
+
+function youtubeWatchUrl(url) {
+  var id = youtubeVideoId(url);
+  if (id) return 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+  return String(url || '').trim();
+}
