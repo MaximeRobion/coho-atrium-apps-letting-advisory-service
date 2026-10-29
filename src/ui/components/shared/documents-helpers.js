@@ -62,7 +62,12 @@ function youtubeVideoId(url) {
 function youtubeEmbedUrl(url) {
   var id = youtubeVideoId(url);
   if (!id) return '';
-  return 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?rel=0';
+  // autoplay=1: iframe is only mounted after the user clicks Watch (user gesture).
+  return (
+    'https://www.youtube-nocookie.com/embed/' +
+    encodeURIComponent(id) +
+    '?rel=0&autoplay=1'
+  );
 }
 
 function youtubeWatchUrl(url) {
