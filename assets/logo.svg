@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Keys logo placeholder">
-  <!-- Placeholder for design team. Square Store icon; replace before listing. -->
-  <rect width="512" height="512" rx="96" fill="#E8EEF2"/>
-  <circle cx="210" cy="220" r="72" fill="none" stroke="#5A6B7A" stroke-width="20"/>
-  <circle cx="210" cy="220" r="24" fill="none" stroke="#5A6B7A" stroke-width="16"/>
-  <path d="M272 240 L400 240 L400 280 L360 280 L360 320 L320 320 L320 280 L292 280" fill="none" stroke="#5A6B7A" stroke-width="20" stroke-linejoin="round" stroke-linecap="round"/>
-  <text x="256" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="36" fill="#5A6B7A">Placeholder</text>
-</svg>

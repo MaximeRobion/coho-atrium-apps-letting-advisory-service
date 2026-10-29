@@ -31,7 +31,7 @@
         ? 'Expert property guides and resources'
         : category === 'templates'
           ? 'Free templates and letters'
-          : 'Video tutorials (placeholders)';
+          : 'Video tutorials from Lettings Advice Service';
     return {
       category: category,
       label: labels[category] || category,

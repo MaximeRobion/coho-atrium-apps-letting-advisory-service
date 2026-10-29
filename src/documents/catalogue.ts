@@ -1,10 +1,10 @@
 /**
  * Static document catalogue scraped from lettingsadviceservice.co.uk
- * (guides + free templates on 2026-10-29; videos are placeholders).
- * Files are NOT hosted here — urls point at Julie storage signed links (or placeholders).
+ * (guides + free templates + videos on 2026-10-29).
+ * Files are NOT hosted here — urls point at Julie storage signed links or YouTube.
  * Counts: guides 67,
  * templates free 48 (skipped paid 10),
- * videos placeholder 3.
+ * videos 22.
  */
 
 export type DocumentCategory = 'guides' | 'templates' | 'videos';
@@ -13,7 +13,7 @@ export interface DocumentItem {
   id: string;
   title: string;
   category: DocumentCategory;
-  /** Open/view URL (signed storage, YouTube placeholder, or empty). */
+  /** Open/view URL (signed storage or YouTube). */
   url: string;
 }
 
@@ -145,9 +145,28 @@ export const DOCUMENT_CATALOGUE: DocumentItem[] = [
   { id: "2d42f3d44862", title: "Wales KEY RETURN AND VACATION ACKNOWLEDGEMENT", category: "templates", url: "https://agzfhmuioafugfmrmuvt.supabase.co/storage/v1/object/sign/client_uploads/library/templates_1782729655166_Wales_KEY_RETURN_AND_VACATION_ACKNOWLEDGEMENT.docx?token=eyJraWQiOiJmZmVjNjM0Ny00Zjk2LTQzODctYjUwOS00YjIxN2MwZDFhMjgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjbGllbnRfdXBsb2Fkcy9saWJyYXJ5L3RlbXBsYXRlc18xNzgyNzI5NjU1MTY2X1dhbGVzX0tFWV9SRVRVUk5fQU5EX1ZBQ0FUSU9OX0FDS05PV0xFREdFTUVOVC5kb2N4Iiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc5MzMwMDgyNCwiZXhwIjoxODI0ODM2ODI0fQ.d6gQuc-_kg9mHLyABJKyWc0bFlPkTPsv7eNOZSOsOq8" },
   { id: "385f41b03631", title: "Withdrawal warning to joint contract-holders WALES", category: "templates", url: "https://agzfhmuioafugfmrmuvt.supabase.co/storage/v1/object/sign/client_uploads/library/templates_2025-08-27T13-10-31-351Z_Withdrawal warning to joint contract-holders WALES.docx?token=eyJraWQiOiJmZmVjNjM0Ny00Zjk2LTQzODctYjUwOS00YjIxN2MwZDFhMjgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjbGllbnRfdXBsb2Fkcy9saWJyYXJ5L3RlbXBsYXRlc18yMDI1LTA4LTI3VDEzLTEwLTMxLTM1MVpfV2l0aGRyYXdhbCB3YXJuaW5nIHRvIGpvaW50IGNvbnRyYWN0LWhvbGRlcnMgV0FMRVMuZG9jeCIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3OTMzMDA4NDUsImV4cCI6MTgyNDgzNjg0NX0.826UKoJjC_2ihF4ouYp_qxtdwH-sysclXuIqO7VzW1c" },
   { id: "690874bb1649", title: "Written Statement of Terms RRA", category: "templates", url: "https://agzfhmuioafugfmrmuvt.supabase.co/storage/v1/object/sign/client_uploads/library/templates_1769176636152_Written_Statement_of_Terms_RRA.docx?token=eyJraWQiOiJmZmVjNjM0Ny00Zjk2LTQzODctYjUwOS00YjIxN2MwZDFhMjgiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJjbGllbnRfdXBsb2Fkcy9saWJyYXJ5L3RlbXBsYXRlc18xNzY5MTc2NjM2MTUyX1dyaXR0ZW5fU3RhdGVtZW50X29mX1Rlcm1zX1JSQS5kb2N4Iiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc5MzMwMDgzMiwiZXhwIjoxODI0ODM2ODMyfQ.v6CVcCBFgaOjNVOurDHjYPG6pbi-_rPovrrWYu8M9es" },
-  { id: "video-placeholder-1", title: "Placeholder: Ask the Expert (coming soon)", category: "videos", url: "https://www.youtube.com/watch?v=placeholder1" },
-  { id: "video-placeholder-2", title: "Placeholder: Compliance walkthrough (coming soon)", category: "videos", url: "https://www.youtube.com/watch?v=placeholder2" },
-  { id: "video-placeholder-3", title: "Placeholder: Renters Rights overview (coming soon)", category: "videos", url: "" },
+  { id: "aeaa004c7bad", title: "Ask the Expert - Damp and Mound with ResiSure", category: "videos", url: "https://youtu.be/jooxLTl-B4Q" },
+  { id: "e1a9525ee67e", title: "Ask the Expert - What is Market rent? with Russell Quirk", category: "videos", url: "https://youtu.be/y-1jPW59znc" },
+  { id: "9e1851a316b4", title: "Bed Bugs, Who is responsible", category: "videos", url: "https://youtu.be/LqtWQoNXgOQ" },
+  { id: "154a99fb8da7", title: "Blocked sinks and drains - A tenants guide", category: "videos", url: "https://youtu.be/vbBfBLxQxww" },
+  { id: "a9ef1039a0df", title: "Debt breathing space and how this effects rent arrears", category: "videos", url: "https://youtu.be/DQYCnrJTBsM" },
+  { id: "b57b0ef90435", title: "Domestic abuse in the rented sector - Joint tenancies and what to do", category: "videos", url: "https://youtu.be/ybBzdxTXOrE" },
+  { id: "f7342002e8bd", title: "E-Bikes and E-Scooters in rented properties", category: "videos", url: "https://youtu.be/N8xbAYg6SjU" },
+  { id: "55e4520b6ac4", title: "Financial Sanction checks and AML", category: "videos", url: "https://youtu.be/PHkQoNXwzPY" },
+  { id: "1a87366bed92", title: "Frozen Pipes - A tenants Guide", category: "videos", url: "https://youtu.be/4XFbSMQ-sQ4" },
+  { id: "4e359ca1957a", title: "Has the tenant abandoned the property? Here is what you need to know", category: "videos", url: "https://youtu.be/L0wIE8CXezg" },
+  { id: "5454aa4885a6", title: "Installing CCTV in HMOs and Single lets", category: "videos", url: "https://youtu.be/OUZK6w6zLog" },
+  { id: "7ef468f8f89e", title: "Money Claim on Line (MCoL)  How to Guide", category: "videos", url: "https://youtu.be/mil5vkuynIg" },
+  { id: "d38806a0d33a", title: "Responsibilities when using Anti-Climb or Anti-vandal paint", category: "videos", url: "https://youtu.be/RO4ze4HYf1A" },
+  { id: "194dae5024eb", title: "Support and Service animals", category: "videos", url: "https://youtu.be/jV5Ckim5lZw" },
+  { id: "235276113ec6", title: "Taking the management of a tenanted property", category: "videos", url: "https://youtu.be/9T-3pFSLuJ8" },
+  { id: "6309177cfdc8", title: "Tenants want compensation - how to evaluate and calculate", category: "videos", url: "https://youtu.be/virbvjeeqK0" },
+  { id: "b6b911397d6e", title: "Understanding Company and Corporate Let agreements", category: "videos", url: "https://youtu.be/m6hX4OGPbaQ" },
+  { id: "6f259b092d73", title: "Wear & Tear and damage, understand the difference", category: "videos", url: "https://youtu.be/mN_nw1POa4M" },
+  { id: "25c09a7595dd", title: "Welcome message (what we do)", category: "videos", url: "https://www.youtube.com/shorts/jz596RL10_E?feature=share" },
+  { id: "bc4390a8b8d4", title: "What to do when a tenant passes away", category: "videos", url: "https://youtu.be/1klsXpkAk94" },
+  { id: "32c397cc74c7", title: "When a Landlord passes away", category: "videos", url: "https://youtu.be/_JPmRzG7WLw" },
+  { id: "baa3e23f5e3f", title: "White goods and appliances, Who is responsible for repair", category: "videos", url: "https://youtu.be/y90NafWcbsQ" },
 ];
 
 export function filterByCategory(

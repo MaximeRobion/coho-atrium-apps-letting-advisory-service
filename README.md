@@ -10,7 +10,7 @@ Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-se
 
 - **Web app** quick view (`/ui`, `openPresentation: modal`): tab strip **Documents | Chat** (bin-rota style; shell X closes — no footer Back/Close). If the document catalogue is empty, the Documents tab is hidden (Chat only).
 - Chat = Tawk **embedded** widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (code defaults to Julie’s LAS property/widget), full-height host under the Chat tab.
-- **Documents** = static catalogue scraped from Julie’s site (`src/documents/catalogue.ts`): Guides (all), Templates (free only — paid “Buy for …” skipped), Videos (placeholders). UI: three category cards → searchable list → View / Download (open storage/YouTube URLs in a new window). Files are **not** hosted in this app. The old Tawk Knowledge Base iframe is removed.
+- **Documents** = static catalogue scraped from Julie’s site (`src/documents/catalogue.ts`): Guides (all), Templates (free only — paid “Buy for …” skipped), Videos (YouTube links from Julie’s library). UI: three category cards → searchable list → View / Download (open storage/YouTube URLs in a new window). Files are **not** hosted in this app. The old Tawk Knowledge Base iframe is removed.
 - **Out of hours:** Chat tab uses hard-coded `Europe/London` hours matching [Julie’s livechat page](https://lettingsadviceservice.co.uk/livechat) (Mon–Fri 10:00–16:00, Sat 10:00–13:00, Sun closed). When closed, the app shows an out-of-hours panel and does **not** mount Tawk (so the offline ticket form never appears). When open, the embed loads with `autoStart=false`; if `getStatus` / `onStatusChange` reports `offline`, the UI swaps to the same panel. These app hours can **drift** from Julie’s Tawk Widget Scheduler — update `src/chatHours.ts` (and `src/ui/components/shared/chat-hours.js`) when her site schedule changes. Do not change Julie’s Tawk dashboard for this. Documents tab is unaffected.
 
 - **Entitlement = Store install** (listed free until commercial terms + Store billing). No in-app billing, cancel, or tracking UI.
@@ -111,7 +111,7 @@ Do **not** enable Secure Mode in Tawk admin for this property (shared with anoth
 
 ## CSP
 
-`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `style-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to` and `*.tawk.to` (including `wss://` on connect). `style-src` must include the Tawk hosts so widget CSS (`max-widget.css`) loads. `frame-src` / `child-src` also allow YouTube for document video placeholders. The Tawk Knowledge Base host is no longer framed. Keys-style tight CSP would block chat.
+`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `style-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to` and `*.tawk.to` (including `wss://` on connect). `style-src` must include the Tawk hosts so widget CSS (`max-widget.css`) loads. `frame-src` / `child-src` also allow YouTube for document videos. The Tawk Knowledge Base host is no longer framed. Keys-style tight CSP would block chat.
 
 ### postMessage parent origin
 

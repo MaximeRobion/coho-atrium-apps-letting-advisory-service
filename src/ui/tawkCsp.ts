@@ -12,7 +12,7 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
   // Chat widget: embed.tawk.to + *.tawk.to (script, CSS, XHR/WS, images).
   const tawkHttps = 'https://embed.tawk.to https://*.tawk.to https://tawk.to';
   const tawkWs = 'wss://*.tawk.to wss://tawk.to';
-  // Documents may open YouTube placeholders in a new window; keep frames for safety.
+  // Documents may open YouTube videos in a new window; keep frames for safety.
   const youtubeFrames =
     'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com';
 

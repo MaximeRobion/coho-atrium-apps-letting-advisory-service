@@ -1,12 +1,12 @@
 # Store assets
 
-Catalogue listing metadata for the COHO Store, kept next to the runtime manifest.
+Runtime manifest and legacy listing metadata. Prefer the atrium-keys-style pack under [`../store/`](../store/) (`icon.png`, `listing.md`) when uploading Store listing art.
 
 | File | Purpose |
 |------|---------|
 | `manifest.json` | Runtime contract (health, capabilities, triggers, quick view). Same shape as root `manifest.example.json`. |
 | `app-details.json` | Store listing fields (name, intro, category, descriptions, prerequisites, background tasks). |
-| `logo.svg` | Square logo. **Placeholder** — design team replaces before public listing. |
+| `logo.png` | Square logo (same art as `store/icon.png`). Julie’s site favicon / og:image, padded and scaled to 1024×1024. |
 
 ## `app-details.json` fields
 
