@@ -20,5 +20,8 @@ export async function handleQuickView(
   const html = quickViewHtml({ connectionReference, usageToken });
   sendHtml(res, html, {
     'Content-Security-Policy': buildQuickViewCsp(),
+    // Tawk needs a referrer (no-referrer breaks embed / message delivery).
+    // https://help.tawk.to/article/how-to-change-the-referrer-policy-setting-on-your-website
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
   });
 }
