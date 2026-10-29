@@ -39,6 +39,9 @@ test('Tawk CSP keeps frame-ancestors and allows embed hosts (no KB iframe)', () 
   assert.match(csp, /connect-src[^;]*'self'/);
   assert.match(csp, /form-action[^;]*'self'/);
   assert.match(csp, /form-action[^;]*https:\/\/\*\.tawk\.to/);
+  assert.match(csp, /font-src[^;]*https:\/\/embed\.tawk\.to/);
+  assert.match(csp, /script-src[^;]*https:\/\/cdn\.jsdelivr\.net/);
+  assert.match(csp, /style-src[^;]*https:\/\/cdn\.jsdelivr\.net/);
 });
 
 test('Dockerfile does not bake Tawk secrets or frame-ancestors', () => {
