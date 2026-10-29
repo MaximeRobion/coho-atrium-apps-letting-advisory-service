@@ -271,7 +271,8 @@ body.coho__dark #las-tablist [role='tab']:hover {
   border: 0;
 }
 
-@media (min-width: 48rem) {
+/* Match category filter 3-up (sm / 35rem): keep title + View on one line. */
+@media (min-width: 35rem) {
   #documents-table.compact__table tr {
     flex-wrap: nowrap;
     padding: 0.625rem 0;

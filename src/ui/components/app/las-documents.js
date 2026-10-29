@@ -191,7 +191,9 @@
             '<tr' +
             (playing ? ' class="is-playing"' : '') +
             '>' +
-            '<td class="documents-row-title">' +
+            '<td class="documents-row-title" title="' +
+            escapeAttr(item.title) +
+            '">' +
             escapeHtml(item.title) +
             '</td>' +
             '<td class="documents-row-actions u-text-align--right">' +
