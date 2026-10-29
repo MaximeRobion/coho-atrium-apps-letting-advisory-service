@@ -17,6 +17,19 @@
     category: firstCategoryWithDocs(),
     query: '',
   };
+  var searchDebounceTimer = null;
+
+  function clearSearchDebounce() {
+    if (searchDebounceTimer) {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = null;
+    }
+  }
+
+  function applySearchFromInput(input) {
+    state.query = (input && input.value) || '';
+    refreshListResults();
+  }
 
   function firstCategoryWithDocs() {
     for (var i = 0; i < CATS.length; i++) {
@@ -123,24 +136,26 @@
           var hasUrl = !!(item.url && String(item.url).trim());
           var viewBtn = hasUrl
             ? '<div class="button__group-item">' +
-              '<button type="button" class="button button--secondary button--tiny" data-action="view" data-id="' +
+              '<button type="button" class="button button--secondary button--small" data-action="view" data-id="' +
               escapeAttr(item.id) +
               '">View</button>' +
               '</div>'
             : '';
           var downloadBtn = hasUrl
             ? '<div class="button__group-item">' +
-              '<button type="button" class="button button--ghost button--tiny" data-action="download" data-id="' +
+              '<button type="button" class="button button--ghost button--small button--icon" data-action="download" data-id="' +
               escapeAttr(item.id) +
-              '">Download</button>' +
+              '">' +
+              '<span class="icon" aria-hidden="true"><svg class="icon-download"><use href="#icon-download"></use></svg></span>' +
+              'Download</button>' +
               '</div>'
             : '<span class="u-text--small u-text-color--grey">Link pending</span>';
           return (
             '<tr>' +
-            '<td class="width-f-350 one-line">' +
+            '<td class="documents-row-title">' +
             escapeHtml(item.title) +
             '</td>' +
-            '<td class="width-f-100 u-text-align--right">' +
+            '<td class="documents-row-actions u-text-align--right">' +
             '<div class="button__group u-margin-bottom--none u-flex--end">' +
             viewBtn +
             downloadBtn +
@@ -198,27 +213,19 @@
     var inCategory = filterDocumentsByCategory(catalogue, state.category);
     var filtered = searchDocumentsByTitle(inCategory, state.query);
 
+    clearSearchDebounce();
+
     root.innerHTML =
       '<section class="page__section page__section--narrow">' +
       '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
       filterCardsHtml() +
       '</div>' +
       '<form class="form form--inline form--slimmer form--full-width u-margin-top--10" id="documents-search-form" novalidate>' +
-      '<div class="form__grid form__grid-2--small form__grid-4--medium">' +
+      '<div class="form__grid">' +
       '<div class="form__grid-element">' +
-      '<input id="documents-search" type="text" placeholder="Search by name" aria-label="Search by name" value="' +
+      '<input id="documents-search" type="search" placeholder="Search by name" aria-label="Search by name" value="' +
       escapeAttr(state.query) +
       '">' +
-      '</div>' +
-      '<div class="form__grid-element">' +
-      '<div class="button__group u-flex--end">' +
-      '<div class="button__group-item">' +
-      '<button type="submit" class="button button--small button--secondary button--icon">' +
-      '<span class="icon" aria-hidden="true"><svg class="icon-find"><use href="#icon-find"></use></svg></span>' +
-      'Filter' +
-      '</button>' +
-      '</div>' +
-      '</div>' +
       '</div>' +
       '</div>' +
       '</form>' +
@@ -234,12 +241,19 @@
     if (form && input) {
       form.addEventListener('submit', function (event) {
         event.preventDefault();
-        state.query = input.value || '';
-        refreshListResults();
+        clearSearchDebounce();
+        applySearchFromInput(input);
+      });
+      input.addEventListener('blur', function () {
+        clearSearchDebounce();
+        applySearchFromInput(input);
       });
       input.addEventListener('input', function () {
-        state.query = input.value || '';
-        refreshListResults();
+        clearSearchDebounce();
+        searchDebounceTimer = setTimeout(function () {
+          searchDebounceTimer = null;
+          applySearchFromInput(input);
+        }, 500);
       });
     }
 

@@ -307,8 +307,11 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(html, /<h2 class="heading--2">Documents<\/h2>/);
     assert.doesNotMatch(html, /id="documents-breadcrumb"/);
     assert.doesNotMatch(html, /id="documents-back"/);
+    assert.doesNotMatch(html, />Filter</);
     assert.match(html, /grid-span-sm-4/);
     assert.match(html, /aria-current="true"/);
+    assert.match(html, /icon-download/);
+    assert.match(html, /documents-row-title/);
     // Markup must not use coloured filter variants (class names still appear in inlined coho.css).
     assert.doesNotMatch(
       html,

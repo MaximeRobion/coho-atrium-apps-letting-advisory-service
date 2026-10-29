@@ -197,6 +197,41 @@ body.coho__dark #las-tablist [role='tab']:hover {
   color: var(--color-grey, #5f5f5f);
 }
 
+/* Keep title + actions on one line even below the compact-table 48rem breakpoint */
+#documents-table.compact__table tr {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.5rem;
+}
+
+#documents-table.compact__table tr td {
+  flex: 0 0 auto;
+  width: auto;
+  font-size: 1rem;
+}
+
+#documents-table .documents-row-title {
+  flex: 1 1 auto !important;
+  min-width: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#documents-table .documents-row-actions {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  text-align: right;
+}
+
+#documents-table .documents-row-actions .button {
+  font-size: 0.9375rem;
+}
+
 #tawk-embed,
 #tawk-host [id^='tawk_'] {
   display: block;
