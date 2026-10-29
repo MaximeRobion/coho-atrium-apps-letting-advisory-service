@@ -311,7 +311,7 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /grid-span-sm-4/);
     assert.match(html, /aria-current="true"/);
     assert.match(html, /documents-row-title/);
-    assert.match(html, />Watch</);
+    assert.match(html, /'Watch<\/button>'/);
     assert.doesNotMatch(html, /Watch now/);
     assert.doesNotMatch(html, /Watch on YouTube/);
     assert.doesNotMatch(html, /data-action="download"/);
