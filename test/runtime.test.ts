@@ -288,6 +288,12 @@ test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async 
     assert.match(html, /panel-library/);
     assert.match(html, /panel-chat/);
     assert.match(html, /Tawk_API\.embedded/);
+    assert.match(html, /Tawk_API\.autoStart\s*=\s*false/);
+    assert.match(html, /getChatHoursStatus/);
+    assert.match(html, /onStatusChange/);
+    assert.match(html, /chat-out-of-hours/);
+    assert.match(html, /Chat is out of hours/);
+    assert.match(html, /Europe\/London/);
     assert.match(html, /\[id\^=['"]tawk_/);
     assert.match(html, /lettingadviceservice\.tawk\.help/);
     assert.doesNotMatch(html, /Open in new tab/);

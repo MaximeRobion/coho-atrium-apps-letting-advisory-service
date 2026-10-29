@@ -164,3 +164,24 @@ body.coho__dark #las-tablist [role='tab']:hover {
   flex: 0 0 auto;
   margin: 0.75rem 1rem 0;
 }
+
+#chat-out-of-hours {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+#chat-out-of-hours:not([hidden]) {
+  display: block;
+}
+
+#panel-chat.is-out-of-hours #tawk-host {
+  display: none !important;
+}
+
+#panel-chat.is-out-of-hours #chat-out-of-hours:not([hidden]) {
+  display: block;
+}

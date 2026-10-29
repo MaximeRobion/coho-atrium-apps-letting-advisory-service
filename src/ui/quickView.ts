@@ -22,7 +22,11 @@ function readCohoCss(): string {
   throw new Error('Missing design/coho.css');
 }
 
-const JS_ORDER = ['shared/app-boot.js', 'app/las-app.js'];
+const JS_ORDER = [
+  'shared/app-boot.js',
+  'shared/chat-hours.js',
+  'app/las-app.js',
+];
 
 function readOrderedJs(paths: string[]): string {
   return paths.map((p) => readFileSync(join(componentsDir, p), 'utf8')).join('\n');

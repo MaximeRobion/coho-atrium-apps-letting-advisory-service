@@ -35,11 +35,17 @@
   var panelLibrary = document.getElementById('panel-library');
   var panelChat = document.getElementById('panel-chat');
   var chatErrorEl = document.getElementById('chat-error');
+  var outOfHoursEl = document.getElementById('chat-out-of-hours');
+  var oohStatusEl = document.getElementById('chat-ooh-status');
+  var oohNextEl = document.getElementById('chat-ooh-next');
   var embedHost = document.getElementById('tawk-embed');
+  var tawkHost = document.getElementById('tawk-host');
   var libraryFrame = document.getElementById('library-frame');
   var tawkLoaded = false;
+  var tawkForcedOffline = false;
   var libraryLoaded = false;
   var chatLoading = false;
+  var lastHoursStatus = null;
   var DEFAULT_KB_URL = 'https://lettingadviceservice.tawk.help';
 
   function tabStorageKey() {
@@ -76,6 +82,67 @@
     }
   }
 
+  function showOutOfHours(status) {
+    lastHoursStatus = status || lastHoursStatus || getChatHoursStatus();
+    var hours = lastHoursStatus;
+    if (oohStatusEl) {
+      oohStatusEl.textContent = "We're currently offline.";
+    }
+    if (oohNextEl) {
+      var next = hours.nextChangeText || '';
+      if (hours.tawkOfflineDuringHours) {
+        oohNextEl.hidden = false;
+        oohNextEl.textContent =
+          'Advisors are not available right now. Please try again shortly, or during the hours below.';
+      } else if (next.indexOf('opens ') === 0) {
+        oohNextEl.hidden = false;
+        oohNextEl.textContent = 'Live chat ' + next + '.';
+      } else {
+        oohNextEl.hidden = true;
+        oohNextEl.textContent = '';
+      }
+    }
+    if (outOfHoursEl) outOfHoursEl.hidden = false;
+    if (panelChat) panelChat.classList.add('is-out-of-hours');
+    if (tawkHost) tawkHost.setAttribute('aria-hidden', 'true');
+  }
+
+  function hideOutOfHours() {
+    if (outOfHoursEl) outOfHoursEl.hidden = true;
+    if (panelChat) panelChat.classList.remove('is-out-of-hours');
+    if (tawkHost) tawkHost.removeAttribute('aria-hidden');
+  }
+
+  function teardownTawkForOutOfHours() {
+    try {
+      if (window.Tawk_API) {
+        if (typeof window.Tawk_API.shutdown === 'function') {
+          window.Tawk_API.shutdown();
+        } else if (typeof window.Tawk_API.hideWidget === 'function') {
+          window.Tawk_API.hideWidget();
+        }
+      }
+    } catch (err) {
+      /* ignore Tawk teardown errors */
+    }
+    if (embedHost) {
+      embedHost.innerHTML = '';
+    }
+  }
+
+  function applyTawkOfflineSafetyNet(status) {
+    if (status !== 'offline') return;
+    tawkForcedOffline = true;
+    var hours = getChatHoursStatus();
+    showOutOfHours({
+      isOpen: false,
+      statusText: "We're offline",
+      nextChangeText: hours.isOpen ? '' : hours.nextChangeText,
+      tawkOfflineDuringHours: hours.isOpen,
+    });
+    teardownTawkForOutOfHours();
+  }
+
   function showTab(tab) {
     var onChat = tab === TAB_CHAT;
     writeStoredTab(onChat ? TAB_CHAT : TAB_LIBRARY);
@@ -90,6 +157,8 @@
    * Tawk embedded mode mounts into the element whose id equals Tawk_API.embedded.
    * It renames #tawk-embed to #tawk_<propertyId>. Size that host with [id^="tawk_"] CSS
    * (not #tawk-embed alone) or the widget collapses to the clipped bubble / tawk.link state.
+   *
+   * autoStart=false avoids flashing the offline ticket form before we read status.
    */
   function loadTawkWidget(embedUrl) {
     if (tawkLoaded || !embedHost) return;
@@ -102,6 +171,35 @@
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
     window.Tawk_API.embedded = hostId;
+    window.Tawk_API.autoStart = false;
+
+    window.Tawk_API.onStatusChange = function (status) {
+      applyTawkOfflineSafetyNet(status);
+    };
+
+    window.Tawk_API.onLoad = function () {
+      var status = null;
+      try {
+        if (typeof window.Tawk_API.getStatus === 'function') {
+          status = window.Tawk_API.getStatus();
+        }
+      } catch (err) {
+        status = null;
+      }
+
+      if (status === 'offline') {
+        applyTawkOfflineSafetyNet('offline');
+        return;
+      }
+
+      try {
+        if (typeof window.Tawk_API.start === 'function') {
+          window.Tawk_API.start();
+        }
+      } catch (err) {
+        /* if start fails, leave embed as-is */
+      }
+    };
 
     var script = document.createElement('script');
     script.async = true;
@@ -131,11 +229,36 @@
   }
 
   async function ensureChat() {
-    if (tawkLoaded || chatLoading) return;
+    if (chatLoading) return;
     chatLoading = true;
     setChatError('');
 
     try {
+      var hours = getChatHoursStatus();
+      lastHoursStatus = hours;
+
+      if (!hours.isOpen || tawkForcedOffline) {
+        // Do not mount Tawk (avoids the offline ticket form).
+        showOutOfHours(
+          tawkForcedOffline
+            ? {
+                isOpen: false,
+                statusText: "We're offline",
+                nextChangeText: hours.isOpen ? '' : hours.nextChangeText,
+                tawkOfflineDuringHours: hours.isOpen,
+              }
+            : hours,
+        );
+        return;
+      }
+
+      hideOutOfHours();
+
+      if (tawkLoaded) {
+        // Already embedded earlier this session while open.
+        return;
+      }
+
       var config = await apiGet('/api/tawk/config');
       if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
         setChatError(
@@ -144,6 +267,15 @@
         );
         return;
       }
+
+      // Re-check hours after the network round-trip.
+      hours = getChatHoursStatus();
+      lastHoursStatus = hours;
+      if (!hours.isOpen) {
+        showOutOfHours(hours);
+        return;
+      }
+
       loadTawkWidget(config.body.embedUrl);
     } catch (err) {
       setChatError(err && err.message ? err.message : 'Failed to open chat');
