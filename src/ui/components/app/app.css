@@ -102,7 +102,7 @@ body.coho__dark #las-tablist [role='tab']:hover {
   background: transparent;
 }
 
-#panel-library,
+#panel-documents,
 #panel-chat {
   display: none;
   flex-direction: column;
@@ -113,12 +113,12 @@ body.coho__dark #las-tablist [role='tab']:hover {
   margin: 0;
 }
 
-#panel-library:not([hidden]),
+#panel-documents:not([hidden]),
 #panel-chat:not([hidden]) {
   display: flex;
 }
 
-#library-host,
+#documents-host,
 #tawk-host {
   display: flex;
   flex-direction: column;
@@ -134,7 +134,17 @@ body.coho__dark #las-tablist [role='tab']:hover {
   background: var(--color-white, #fff);
 }
 
-#library-frame,
+#documents-host {
+  overflow: auto;
+}
+
+#documents-root {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
 #tawk-embed,
 #tawk-host [id^='tawk_'] {
   display: block;

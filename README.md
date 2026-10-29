@@ -1,6 +1,6 @@
 # atrium-lettings-advice
 
-COHO Atrium seed app for the **Lettings Advice Service** (Julie’s Tawk.to chat + Knowledge Base).
+COHO Atrium seed app for the **Lettings Advice Service** (Julie’s Tawk.to chat + Documents catalogue).
 
 Private product app under `CompanyForLife/atrium-lettings-advice`. It is **not** part of the HouseShare monorepo. Persistent state is **SQLite** under `ATRIUM_DATA_DIR` (Hosting: `/data` on EFS) and holds **connection secrets only**. Support ownership: **COHO** (internal seed).
 
@@ -8,10 +8,10 @@ Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-se
 
 ## Scope
 
-- **Web app** quick view (`/ui`, `openPresentation: modal`): tab strip **Library | Chat** (bin-rota style; shell X closes — no footer Back/Close).
+- **Web app** quick view (`/ui`, `openPresentation: modal`): tab strip **Documents | Chat** (bin-rota style; shell X closes — no footer Back/Close). If the document catalogue is empty, the Documents tab is hidden (Chat only).
 - Chat = Tawk **embedded** widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (code defaults to Julie’s LAS property/widget), full-height host under the Chat tab.
-- Document library = Tawk Knowledge Base iframe `https://lettingadviceservice.tawk.help` (full height under the Library tab).
-- **Out of hours:** Chat tab uses hard-coded `Europe/London` hours matching [Julie’s livechat page](https://lettingsadviceservice.co.uk/livechat) (Mon–Fri 10:00–16:00, Sat 10:00–13:00, Sun closed). When closed, the app shows an out-of-hours panel and does **not** mount Tawk (so the offline ticket form never appears). When open, the embed loads with `autoStart=false`; if `getStatus` / `onStatusChange` reports `offline`, the UI swaps to the same panel. These app hours can **drift** from Julie’s Tawk Widget Scheduler — update `src/chatHours.ts` (and `src/ui/components/shared/chat-hours.js`) when her site schedule changes. Do not change Julie’s Tawk dashboard for this. Library tab is unaffected.
+- **Documents** = static catalogue scraped from Julie’s site (`src/documents/catalogue.ts`): Guides (all), Templates (free only — paid “Buy for …” skipped), Videos (placeholders). UI: three category cards → searchable list → View / Download (open storage/YouTube URLs in a new window). Files are **not** hosted in this app. The old Tawk Knowledge Base iframe is removed.
+- **Out of hours:** Chat tab uses hard-coded `Europe/London` hours matching [Julie’s livechat page](https://lettingsadviceservice.co.uk/livechat) (Mon–Fri 10:00–16:00, Sat 10:00–13:00, Sun closed). When closed, the app shows an out-of-hours panel and does **not** mount Tawk (so the offline ticket form never appears). When open, the embed loads with `autoStart=false`; if `getStatus` / `onStatusChange` reports `offline`, the UI swaps to the same panel. These app hours can **drift** from Julie’s Tawk Widget Scheduler — update `src/chatHours.ts` (and `src/ui/components/shared/chat-hours.js`) when her site schedule changes. Do not change Julie’s Tawk dashboard for this. Documents tab is unaffected.
 
 - **Entitlement = Store install** (listed free until commercial terms + Store billing). No in-app billing, cancel, or tracking UI.
 - **Secure Mode / visitor login is out** — another team shares the same Tawk property. Do **not** enable Secure Mode in Tawk admin for this app. The app does **not** call `Tawk_API.login`. `TAWK_API_KEY` is optional/unused; hash helpers remain as dead code only.
@@ -39,7 +39,7 @@ Copy [`.env.example`](./.env.example). **Never commit `.env` or real secrets.**
 | `ATRIUM_FRAME_ANCESTORS` / `ATRIUM_PARENT_ORIGIN` | Hosting injects for iframe CSP / postMessage |
 | `TAWK_PROPERTY_ID` | Tawk property id (code default: Julie’s LAS property) |
 | `TAWK_WIDGET_ID` | Chat widget id (code default: Julie’s LAS chat widget) |
-| `TAWK_KNOWLEDGE_BASE_URL` | Optional override; default `https://lettingadviceservice.tawk.help` |
+| `TAWK_KNOWLEDGE_BASE_URL` | Unused by the UI (KB iframe removed). Kept on `/api/tawk/config` for compatibility |
 | `TAWK_API_KEY` | Unused (Secure Mode out). Leave empty; never commit a real key |
 
 COHO Public API base URL comes from `lifecycle.setup` (`data.apiBaseUrl`), not from env.
@@ -111,7 +111,7 @@ Do **not** enable Secure Mode in Tawk admin for this property (shared with anoth
 
 ## CSP
 
-`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `style-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to`, `*.tawk.to` (including `wss://` on connect), and the Knowledge Base host `lettingadviceservice.tawk.help` / `*.tawk.help`. `style-src` must include the Tawk hosts so widget CSS (`max-widget.css`) loads. `frame-src` / `child-src` also allow YouTube embeds used in KB articles. Keys-style tight CSP would block chat and the library iframe.
+`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `style-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to` and `*.tawk.to` (including `wss://` on connect). `style-src` must include the Tawk hosts so widget CSS (`max-widget.css`) loads. `frame-src` / `child-src` also allow YouTube for document video placeholders. The Tawk Knowledge Base host is no longer framed. Keys-style tight CSP would block chat.
 
 ### postMessage parent origin
 

@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DOCUMENT_CATALOGUE } from '../documents/catalogue.js';
 import { parentOrigin } from './csp.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -25,6 +26,8 @@ function readCohoCss(): string {
 const JS_ORDER = [
   'shared/app-boot.js',
   'shared/chat-hours.js',
+  'shared/documents-helpers.js',
+  'app/las-documents.js',
   'app/las-app.js',
 ];
 
@@ -51,7 +54,8 @@ export function quickViewHtml(opts: {
   const bootstrap =
     `const CONNECTION_REFERENCE = ${JSON.stringify(opts.connectionReference)};\n` +
     `const USAGE_TOKEN = ${JSON.stringify(opts.usageToken)};\n` +
-    `const PARENT_ORIGIN = ${JSON.stringify(parentOrigin())};\n`;
+    `const PARENT_ORIGIN = ${JSON.stringify(parentOrigin())};\n` +
+    `const DOCUMENT_CATALOGUE = ${JSON.stringify(DOCUMENT_CATALOGUE)};\n`;
 
   if (!clientJs.includes(BOOTSTRAP_MARKER)) {
     throw new Error('las-app.js missing bootstrap marker');

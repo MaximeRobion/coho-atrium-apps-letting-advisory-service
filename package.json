@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "COHO Atrium seed app: Lettings Advice Service (Tawk chat + Knowledge Base)",
+  "description": "COHO Atrium seed app: Lettings Advice Service (Tawk chat + Documents catalogue)",
   "engines": {
     "node": ">=22"
   },

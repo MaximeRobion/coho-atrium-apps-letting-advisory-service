@@ -28,11 +28,11 @@
     /* ignore */
   }
 
-  var TAB_LIBRARY = 'library';
+  var TAB_DOCUMENTS = 'documents';
   var TAB_CHAT = 'chat';
-  var navLibrary = document.getElementById('nav-library');
+  var navDocuments = document.getElementById('nav-documents');
   var navChat = document.getElementById('nav-chat');
-  var panelLibrary = document.getElementById('panel-library');
+  var panelDocuments = document.getElementById('panel-documents');
   var panelChat = document.getElementById('panel-chat');
   var chatErrorEl = document.getElementById('chat-error');
   var outOfHoursEl = document.getElementById('chat-out-of-hours');
@@ -40,13 +40,21 @@
   var oohNextEl = document.getElementById('chat-ooh-next');
   var embedHost = document.getElementById('tawk-embed');
   var tawkHost = document.getElementById('tawk-host');
-  var libraryFrame = document.getElementById('library-frame');
   var tawkLoaded = false;
   var tawkForcedOffline = false;
-  var libraryLoaded = false;
   var chatLoading = false;
   var lastHoursStatus = null;
-  var DEFAULT_KB_URL = 'https://lettingadviceservice.tawk.help';
+
+  var documentsEnabled =
+    window.LasDocuments && typeof window.LasDocuments.hasDocuments === 'function'
+      ? window.LasDocuments.hasDocuments()
+      : typeof DOCUMENT_CATALOGUE !== 'undefined' &&
+        catalogueHasDocuments(DOCUMENT_CATALOGUE);
+
+  if (!documentsEnabled) {
+    if (navDocuments) navDocuments.hidden = true;
+    if (panelDocuments) panelDocuments.hidden = true;
+  }
 
   function tabStorageKey() {
     return 'las:' + CONNECTION_REFERENCE + ':activeTab';
@@ -56,14 +64,17 @@
     try {
       var raw = localStorage.getItem(tabStorageKey());
       if (raw === TAB_CHAT) return TAB_CHAT;
+      if (raw === TAB_DOCUMENTS && documentsEnabled) return TAB_DOCUMENTS;
+      // Legacy key from Library tab.
+      if (raw === 'library' && documentsEnabled) return TAB_DOCUMENTS;
     } catch (e) {
       /* private mode / blocked storage */
     }
-    return TAB_LIBRARY;
+    return documentsEnabled ? TAB_DOCUMENTS : TAB_CHAT;
   }
 
   function writeStoredTab(tab) {
-    if (tab !== TAB_LIBRARY && tab !== TAB_CHAT) return;
+    if (tab !== TAB_DOCUMENTS && tab !== TAB_CHAT) return;
     try {
       localStorage.setItem(tabStorageKey(), tab);
     } catch (e) {
@@ -145,11 +156,13 @@
 
   function showTab(tab) {
     var onChat = tab === TAB_CHAT;
-    writeStoredTab(onChat ? TAB_CHAT : TAB_LIBRARY);
+    writeStoredTab(onChat ? TAB_CHAT : TAB_DOCUMENTS);
 
-    panelLibrary.hidden = onChat;
+    if (panelDocuments) panelDocuments.hidden = onChat || !documentsEnabled;
     panelChat.hidden = !onChat;
-    navLibrary.setAttribute('aria-selected', onChat ? 'false' : 'true');
+    if (navDocuments) {
+      navDocuments.setAttribute('aria-selected', onChat || !documentsEnabled ? 'false' : 'true');
+    }
     navChat.setAttribute('aria-selected', onChat ? 'true' : 'false');
   }
 
@@ -209,25 +222,6 @@
     document.body.appendChild(script);
   }
 
-  async function ensureLibrary() {
-    if (libraryLoaded && libraryFrame && libraryFrame.getAttribute('src')) return;
-
-    var kbUrl = DEFAULT_KB_URL;
-    try {
-      var config = await apiGet('/api/tawk/config');
-      if (config.ok && config.body && config.body.knowledgeBaseUrl) {
-        kbUrl = config.body.knowledgeBaseUrl;
-      }
-    } catch (err) {
-      /* keep default KB URL */
-    }
-
-    if (libraryFrame) {
-      libraryFrame.src = kbUrl;
-      libraryLoaded = true;
-    }
-  }
-
   async function ensureChat() {
     if (chatLoading) return;
     chatLoading = true;
@@ -284,11 +278,12 @@
     }
   }
 
-  function openLibraryTab() {
-    showTab(TAB_LIBRARY);
-    ensureLibrary().catch(function () {
-      /* KB iframe still uses default URL */
-    });
+  function openDocumentsTab() {
+    if (!documentsEnabled) {
+      openChatTab();
+      return;
+    }
+    showTab(TAB_DOCUMENTS);
   }
 
   function openChatTab() {
@@ -298,18 +293,20 @@
     });
   }
 
-  navLibrary.addEventListener('click', function (event) {
-    event.preventDefault();
-    openLibraryTab();
-  });
+  if (navDocuments) {
+    navDocuments.addEventListener('click', function (event) {
+      event.preventDefault();
+      openDocumentsTab();
+    });
+  }
   navChat.addEventListener('click', function (event) {
     event.preventDefault();
     openChatTab();
   });
 
-  if (readStoredTab() === TAB_CHAT) {
+  if (readStoredTab() === TAB_CHAT || !documentsEnabled) {
     openChatTab();
   } else {
-    openLibraryTab();
+    openDocumentsTab();
   }
 })();

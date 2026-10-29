@@ -1,7 +1,7 @@
 import { sanitizeFrameAncestors } from './csp.js';
 
 /**
- * CSP for /ui with Tawk chat embed + Knowledge Base iframe.
+ * CSP for /ui with Tawk chat embed + Documents tab (external View/Download links).
  * Keep Hosting frame-ancestors; widen script/style/frame/connect/img for Tawk hosts.
  */
 export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
@@ -12,10 +12,9 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
   // Chat widget: embed.tawk.to + *.tawk.to (script, CSS, XHR/WS, images).
   const tawkHttps = 'https://embed.tawk.to https://*.tawk.to https://tawk.to';
   const tawkWs = 'wss://*.tawk.to wss://tawk.to';
-  // Document library KB lives on *.tawk.help (not tawk.to).
-  const tawkHelp = 'https://lettingadviceservice.tawk.help https://*.tawk.help';
-  // KB articles may embed YouTube Shorts / videos.
-  const youtubeFrames = 'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com';
+  // Documents may open YouTube placeholders in a new window; keep frames for safety.
+  const youtubeFrames =
+    'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com';
 
   return [
     `frame-ancestors ${frameAncestors}`,
@@ -23,10 +22,10 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
     `script-src 'unsafe-inline' ${tawkHttps}`,
     `style-src 'unsafe-inline' https://fonts.googleapis.com ${tawkHttps}`,
     'font-src https://fonts.gstatic.com',
-    `connect-src 'self' ${tawkHttps} ${tawkWs} ${tawkHelp}`,
-    `img-src 'self' data: blob: ${tawkHttps} ${tawkHelp}`,
-    `frame-src ${tawkHttps} ${tawkHelp} ${youtubeFrames}`,
-    `child-src ${tawkHttps} ${tawkHelp} ${youtubeFrames}`,
+    `connect-src 'self' ${tawkHttps} ${tawkWs}`,
+    `img-src 'self' data: blob: ${tawkHttps}`,
+    `frame-src ${tawkHttps} ${youtubeFrames}`,
+    `child-src ${tawkHttps} ${youtubeFrames}`,
     "base-uri 'none'",
     "form-action 'self'",
   ].join('; ');

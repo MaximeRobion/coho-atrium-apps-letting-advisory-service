@@ -253,7 +253,7 @@ test('visitor Secure Mode route is removed', async () => {
   });
 });
 
-test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async () => {
+test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', async () => {
   await withServer(async (port) => {
     repo.upsertConnection({
       connectionReference: CONNECTION,
@@ -278,15 +278,20 @@ test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async 
     assert.equal(res.headers.get('cache-control'), 'no-store');
     const csp = res.headers.get('content-security-policy') || '';
     assert.match(csp, /embed\.tawk\.to/);
-    assert.match(csp, /lettingadviceservice\.tawk\.help/);
+    assert.doesNotMatch(csp, /tawk\.help/);
     const html = await res.text();
     assert.match(html, /Lettings Advice Service/);
-    assert.match(html, /nav-library/);
+    assert.match(html, /nav-documents/);
     assert.match(html, /nav-chat/);
-    assert.match(html, />Library</);
+    assert.match(html, />Documents</);
     assert.match(html, />Chat</);
-    assert.match(html, /panel-library/);
+    assert.match(html, /panel-documents/);
     assert.match(html, /panel-chat/);
+    assert.match(html, /documents-root/);
+    assert.match(html, /DOCUMENT_CATALOGUE/);
+    assert.match(html, /LasDocuments/);
+    assert.doesNotMatch(html, /library-frame/);
+    assert.doesNotMatch(html, /lettingadviceservice\.tawk\.help/);
     assert.match(html, /Tawk_API\.embedded/);
     assert.match(html, /Tawk_API\.autoStart\s*=\s*false/);
     assert.match(html, /getChatHoursStatus/);
@@ -295,7 +300,6 @@ test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async 
     assert.match(html, /Chat is out of hours/);
     assert.match(html, /Europe\/London/);
     assert.match(html, /\[id\^=['"]tawk_/);
-    assert.match(html, /lettingadviceservice\.tawk\.help/);
     assert.doesNotMatch(html, /Open in new tab/);
     assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
     assert.doesNotMatch(html, /Chat ready/);
