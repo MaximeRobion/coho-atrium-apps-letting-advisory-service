@@ -26,18 +26,11 @@
         : category === 'templates'
           ? 'card__filters--progress'
           : 'card__filters--active';
-    var description =
-      category === 'guides'
-        ? 'Expert property guides and resources'
-        : category === 'templates'
-          ? 'Free templates and letters'
-          : 'Video tutorials from Lettings Advice Service';
     return {
       category: category,
       label: labels[category] || category,
       count: count,
       variant: variant,
-      description: description,
     };
   }
 
@@ -114,9 +107,6 @@
           '</' +
           tag +
           '>' +
-          '<p class="u-text--small u-text-color--grey u-margin-top--10">' +
-          meta.description +
-          '</p>' +
           '</div>'
         );
       })
@@ -124,9 +114,6 @@
 
     root.innerHTML =
       '<section class="page__section page__section--narrow">' +
-      '<div class="heading--section">' +
-      '<h2 class="heading--2">Documents</h2>' +
-      '</div>' +
       '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
       cards +
       '</div>' +

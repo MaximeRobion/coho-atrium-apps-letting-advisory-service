@@ -298,8 +298,13 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /getChatHoursStatus/);
     assert.match(html, /onStatusChange/);
     assert.match(html, /chat-out-of-hours/);
-    assert.match(html, /Chat is out of hours/);
+    assert.doesNotMatch(html, /Chat is out of hours/);
+    assert.match(html, /We're currently offline/);
     assert.match(html, /Europe\/London/);
+    assert.doesNotMatch(html, /Expert property guides and resources/);
+    assert.doesNotMatch(html, /Free templates and letters/);
+    assert.doesNotMatch(html, /Video tutorials from Lettings Advice Service/);
+    assert.doesNotMatch(html, /<h2 class="heading--2">Documents<\/h2>/);
     assert.match(html, /\[id\^=['"]tawk_/);
     assert.doesNotMatch(html, /Open in new tab/);
     assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
