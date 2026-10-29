@@ -23,12 +23,14 @@ test('frame-ancestors defaults to localhost only when unset', () => {
   assert.equal(sanitizeFrameAncestors(undefined), DEFAULT_FRAME_ANCESTORS);
 });
 
-test('Tawk CSP keeps frame-ancestors and allows embed hosts', () => {
+test('Tawk CSP keeps frame-ancestors and allows embed + KB hosts', () => {
   delete process.env.ATRIUM_PARENT_ORIGIN;
   const csp = buildQuickViewCsp('https://applabs.coho.management');
   assert.match(csp, /frame-ancestors https:\/\/applabs\.coho\.management/);
   assert.match(csp, /script-src[^;]*https:\/\/embed\.tawk\.to/);
   assert.match(csp, /frame-src[^;]*https:\/\/\*\.tawk\.to/);
+  assert.match(csp, /frame-src[^;]*https:\/\/lettingadviceservice\.tawk\.help/);
+  assert.match(csp, /frame-src[^;]*https:\/\/\*\.tawk\.help/);
   assert.match(csp, /connect-src[^;]*wss:\/\/\*\.tawk\.to/);
   assert.match(csp, /img-src[^;]*https:\/\/\*\.tawk\.to/);
   assert.match(csp, /connect-src[^;]*'self'/);

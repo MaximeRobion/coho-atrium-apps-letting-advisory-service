@@ -1,11 +1,11 @@
 {
   "name": "Lettings Advice Service",
   "shortName": "Lettings Advice",
-  "intro": "Chat with Julie’s lettings advice team without leaving COHO.",
+  "intro": "Browse Julie’s lettings advice documents and chat with the advice team without leaving COHO.",
   "category": "lettings",
   "logo": "logo.svg",
-  "fullDescription": "A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat for connected organisations. Store install is the entitlement (listed free until commercial terms and Store billing). Secure Mode visitor login identifies the opening manager when TAWK_API_KEY is configured. Document library is deferred until the canonical docs URL is confirmed.",
-  "whatItCanDo": "Open a signed quick view from the Store. Start a Tawk chat with the advice team. Optionally identify the manager via Secure Mode (HMAC of organisation person Guid). Disconnect wipes this app’s connection secrets from SQLite.",
-  "prerequisites": "Connect from the COHO Store. The connecting manager must grant organisation.read and users.read so the app can resolve org and person labels for Secure Mode. Tawk property/widget IDs and Secure Mode API key are injected by Hosting — not configured by the customer.",
+  "fullDescription": "A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat and Tawk Knowledge Base for connected organisations. Store install is the entitlement (listed free until commercial terms and Store billing). Secure Mode visitor login is not used — the Tawk property is shared with another team. Document library opens https://lettingadviceservice.tawk.help.",
+  "whatItCanDo": "Open a signed quick view from the Store. Browse the Tawk Knowledge Base document library. Start a Tawk chat with the advice team. Disconnect wipes this app’s connection secrets from SQLite.",
+  "prerequisites": "Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Tawk property/widget IDs default in code; Hosting may override TAWK_* — the Secure Mode API key is unused.",
   "backgroundTasks": "None in P0. No product schedules or domain event webhooks. Entitlement is the Store connection only; there is no in-app billing UI."
 }

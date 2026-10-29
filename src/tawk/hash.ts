@@ -1,8 +1,13 @@
 import crypto from 'node:crypto';
 
 /**
- * Tawk Secure Mode visitor hash.
- * Message is the OrganisationPerson Guid string, lowercased (legacy LAS behaviour).
+ * Dead code: Tawk Secure Mode visitor hash.
+ *
+ * Product pivot (DEV-2840): Secure Mode / Tawk_API.login is out — the same Tawk
+ * property is shared with another team. Kept only so the historical HMAC shape
+ * is documented if Secure Mode is ever revisited intentionally.
+ *
+ * Message is the OrganisationPerson Guid string, lowercased (legacy LAS).
  * Returns lowercase hex HMAC-SHA256.
  */
 export function mintTawkVisitorHash(userId: string, apiKey: string): string {

@@ -7,7 +7,6 @@ import {
   resetUsageAuthFetch,
   setUsageAuthFetch,
 } from '../src/api/usageAuth.js';
-import { resetDirectoryFetch, setDirectoryFetch } from '../src/api/cohoDirectory.js';
 import { resetDeliveryDedupe } from '../src/atrium/deliveryDedupe.js';
 import { createSignatureHeader } from '../src/atrium/signature.js';
 import * as repo from '../src/connections/repository.js';
@@ -17,7 +16,6 @@ import { createRequestListener, EMPTY_CONFIG_SCHEMA, QUICK_VIEW_PATH } from '../
 const SETUP_SECRET = 'bootstrap-setup-secret';
 const CONNECTION = '11111111-1111-1111-1111-111111111111';
 const PERSON_REF = 'PER-test';
-const PERSON_GUID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 
 function fakeUsageJwt(claims: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url');
@@ -39,36 +37,11 @@ beforeEach(() => {
   resetDeliveryDedupe();
   clearUsageAuthCache();
   setUsageAuthFetch(async () => new Response(null, { status: 200 }));
-  setDirectoryFetch(async (input) => {
-    const url = String(input);
-    if (url.includes('/organisation/users')) {
-      return new Response(
-        JSON.stringify({
-          items: [
-            {
-              guid: PERSON_GUID,
-              personReference: PERSON_REF,
-              forename: 'Alex',
-              surname: 'Manager',
-              email: 'Alex@Example.COM',
-            },
-          ],
-        }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } },
-      );
-    }
-    if (url.endsWith('/organisation')) {
-      return new Response(JSON.stringify({ accountName: 'Dahlia Properties' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    return new Response(null, { status: 404 });
-  });
   delete process.env.ATRIUM_FRAME_ANCESTORS;
   delete process.env.TAWK_PROPERTY_ID;
   delete process.env.TAWK_WIDGET_ID;
   delete process.env.TAWK_API_KEY;
+  delete process.env.TAWK_KNOWLEDGE_BASE_URL;
   delete process.env.ATRIUM_DEV_MODE;
   delete process.env.NODE_ENV;
 });
@@ -77,11 +50,11 @@ afterEach(() => {
   closeDatabase();
   resetDeliveryDedupe();
   resetUsageAuthFetch();
-  resetDirectoryFetch();
   clearUsageAuthCache();
   delete process.env.TAWK_PROPERTY_ID;
   delete process.env.TAWK_WIDGET_ID;
   delete process.env.TAWK_API_KEY;
+  delete process.env.TAWK_KNOWLEDGE_BASE_URL;
 });
 
 async function withServer(
@@ -228,11 +201,40 @@ test('signed empty config schema/get/put', async () => {
   });
 });
 
-test('visitor hash endpoint returns Secure Mode login when key set', async () => {
-  process.env.TAWK_PROPERTY_ID = 'tawk-property-test';
-  process.env.TAWK_WIDGET_ID = 'tawk-widget-test';
-  process.env.TAWK_API_KEY = 'unit-test-api-key';
+test('tawk config returns embed + knowledge base; never exposes api key', async () => {
+  process.env.TAWK_API_KEY = 'unit-test-api-key-must-not-leak';
 
+  await withServer(async (port) => {
+    repo.upsertConnection({
+      connectionReference: CONNECTION,
+      apiKey: 'k',
+      apiBaseUrl: 'https://api.example.com',
+      signingSecret: 'connection-signing-secret',
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/api/tawk/config`, {
+      headers: {
+        Authorization: `Bearer ${usageTokenFor()}`,
+        'X-Atrium-Connection-Reference': CONNECTION,
+      },
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as Record<string, unknown>;
+    assert.equal(body.ok, true);
+    assert.equal(
+      body.embedUrl,
+      'https://embed.tawk.to/687cb5a73606072bf84a6030/1j0jib5sb',
+    );
+    assert.equal(body.knowledgeBaseUrl, 'https://lettingadviceservice.tawk.help');
+    assert.equal(body.configured, true);
+    assert.equal(body.apiKey, undefined);
+    assert.equal(body.secureModeEnabled, undefined);
+    const raw = JSON.stringify(body);
+    assert.doesNotMatch(raw, /unit-test-api-key/);
+  });
+});
+
+test('visitor Secure Mode route is removed', async () => {
   await withServer(async (port) => {
     repo.upsertConnection({
       connectionReference: CONNECTION,
@@ -247,58 +249,11 @@ test('visitor hash endpoint returns Secure Mode login when key set', async () =>
         'X-Atrium-Connection-Reference': CONNECTION,
       },
     });
-    assert.equal(res.status, 200);
-    const body = (await res.json()) as {
-      ok: boolean;
-      secureModeEnabled: boolean;
-      login: { userId: string; hash: string; name: string; email: string };
-    };
-    assert.equal(body.ok, true);
-    assert.equal(body.secureModeEnabled, true);
-    assert.equal(body.login.userId, PERSON_GUID);
-    assert.equal(body.login.email, 'alex@example.com');
-    assert.equal(body.login.name, 'Dahlia Properties - Alex Manager');
-    assert.match(body.login.hash, /^[a-f0-9]{64}$/);
+    assert.equal(res.status, 404);
   });
 });
 
-test('visitor endpoint degrades without TAWK_API_KEY', async () => {
-  process.env.TAWK_PROPERTY_ID = 'tawk-property-test';
-  process.env.TAWK_WIDGET_ID = 'tawk-widget-test';
-  delete process.env.TAWK_API_KEY;
-
-  await withServer(async (port) => {
-    repo.upsertConnection({
-      connectionReference: CONNECTION,
-      apiKey: 'k',
-      apiBaseUrl: 'https://api.example.com',
-      signingSecret: 'connection-signing-secret',
-    });
-
-    const res = await fetch(`http://127.0.0.1:${port}/api/tawk/visitor`, {
-      headers: {
-        Authorization: `Bearer ${usageTokenFor()}`,
-        'X-Atrium-Connection-Reference': CONNECTION,
-      },
-    });
-    assert.equal(res.status, 200);
-    const body = (await res.json()) as {
-      ok: boolean;
-      secureModeEnabled: boolean;
-      login: null;
-      embedUrl: string;
-    };
-    assert.equal(body.ok, true);
-    assert.equal(body.secureModeEnabled, false);
-    assert.equal(body.login, null);
-    assert.match(body.embedUrl, /embed\.tawk\.to/);
-  });
-});
-
-test('signed /ui returns HTML with Tawk-friendly CSP', async () => {
-  process.env.TAWK_PROPERTY_ID = 'prop';
-  process.env.TAWK_WIDGET_ID = 'widget';
-
+test('signed /ui returns HTML with library + chat and Tawk-friendly CSP', async () => {
   await withServer(async (port) => {
     repo.upsertConnection({
       connectionReference: CONNECTION,
@@ -323,8 +278,13 @@ test('signed /ui returns HTML with Tawk-friendly CSP', async () => {
     assert.equal(res.headers.get('cache-control'), 'no-store');
     const csp = res.headers.get('content-security-policy') || '';
     assert.match(csp, /embed\.tawk\.to/);
+    assert.match(csp, /lettingadviceservice\.tawk\.help/);
     const html = await res.text();
     assert.match(html, /Lettings Advice Service/);
+    assert.match(html, /Document library/);
     assert.match(html, /Open chat/);
+    assert.match(html, /screen-library/);
+    assert.doesNotMatch(html, /Tawk_API\.login/);
+    assert.doesNotMatch(html, /Secure Mode/);
   });
 });

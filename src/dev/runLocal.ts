@@ -38,6 +38,6 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`[atrium-lettings-advice] dataDir=${dataDir} seed=${JSON.stringify(seed)}`);
   console.log(`[atrium-lettings-advice] open: ${uiUrl}`);
   console.log(
-    '[atrium-lettings-advice] Set TAWK_PROPERTY_ID / TAWK_WIDGET_ID / TAWK_API_KEY in the environment to exercise the chat widget locally.',
+    '[atrium-lettings-advice] Chat + document library use code defaults for Tawk property/widget/KB; override TAWK_* env only if needed.',
   );
 });

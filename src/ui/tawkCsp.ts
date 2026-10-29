@@ -1,7 +1,7 @@
 import { sanitizeFrameAncestors } from './csp.js';
 
 /**
- * CSP for /ui with Tawk embed.
+ * CSP for /ui with Tawk chat embed + Knowledge Base iframe.
  * Keep Hosting frame-ancestors; widen script/frame/connect/img for Tawk hosts.
  */
 export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
@@ -9,9 +9,11 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
     frameAncestorsEnv ?? process.env.ATRIUM_FRAME_ANCESTORS,
   );
 
-  // Tawk widget loads embed.tawk.to, spawns iframes, XHR/WS, and images from *.tawk.to.
+  // Chat widget: embed.tawk.to + *.tawk.to (script, XHR/WS, images).
   const tawkHttps = 'https://embed.tawk.to https://*.tawk.to https://tawk.to';
   const tawkWs = 'wss://*.tawk.to wss://tawk.to';
+  // Document library KB lives on *.tawk.help (not tawk.to).
+  const tawkHelp = 'https://lettingadviceservice.tawk.help https://*.tawk.help';
 
   return [
     `frame-ancestors ${frameAncestors}`,
@@ -19,10 +21,10 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
     `script-src 'unsafe-inline' ${tawkHttps}`,
     "style-src 'unsafe-inline' https://fonts.googleapis.com",
     'font-src https://fonts.gstatic.com',
-    `connect-src 'self' ${tawkHttps} ${tawkWs}`,
-    `img-src 'self' data: blob: ${tawkHttps}`,
-    `frame-src ${tawkHttps}`,
-    `child-src ${tawkHttps}`,
+    `connect-src 'self' ${tawkHttps} ${tawkWs} ${tawkHelp}`,
+    `img-src 'self' data: blob: ${tawkHttps} ${tawkHelp}`,
+    `frame-src ${tawkHttps} ${tawkHelp}`,
+    `child-src ${tawkHttps} ${tawkHelp}`,
     "base-uri 'none'",
     "form-action 'self'",
   ].join('; ');

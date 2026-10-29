@@ -9,10 +9,6 @@ export const LOCAL_DEV_CONNECTION = 'local-dev-connection';
 export const LOCAL_DEV_ACTOR = 'PER-local-dev';
 export const LOCAL_DEV_API_BASE_URL = 'http://127.0.0.1:9';
 export const LOCAL_DEV_SIGNING_SECRET = 'local-dev-signing-secret';
-export const LOCAL_DEV_ORG_NAME = 'Local Dev Lettings';
-export const LOCAL_DEV_PERSON_NAME = 'Alex Manager';
-export const LOCAL_DEV_PERSON_EMAIL = 'alex@example.com';
-export const LOCAL_DEV_PERSON_GUID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 
 /** Synthetic atrium_usage JWT claims for inlined /ui bootstrap (never probed). */
 export function localDevUsageToken(connectionReference = LOCAL_DEV_CONNECTION): string {

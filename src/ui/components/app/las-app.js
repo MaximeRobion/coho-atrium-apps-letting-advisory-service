@@ -30,25 +30,43 @@
 
   var home = document.getElementById('screen-home');
   var chat = document.getElementById('screen-chat');
+  var library = document.getElementById('screen-library');
   var statusEl = document.getElementById('chat-status');
+  var libraryStatusEl = document.getElementById('library-status');
   var embedHost = document.getElementById('tawk-embed');
+  var libraryFrame = document.getElementById('library-frame');
+  var libraryExternal = document.getElementById('library-open-external');
   var tawkLoaded = false;
+  var libraryLoaded = false;
+  var DEFAULT_KB_URL = 'https://lettingadviceservice.tawk.help';
 
   function showHome() {
     home.hidden = false;
     chat.hidden = true;
+    library.hidden = true;
   }
 
   function showChat() {
     home.hidden = true;
     chat.hidden = false;
+    library.hidden = true;
+  }
+
+  function showLibrary() {
+    home.hidden = true;
+    chat.hidden = true;
+    library.hidden = false;
   }
 
   function setStatus(text) {
     if (statusEl) statusEl.textContent = text || '';
   }
 
-  function loadTawkWidget(embedUrl, login) {
+  function setLibraryStatus(text) {
+    if (libraryStatusEl) libraryStatusEl.textContent = text || '';
+  }
+
+  function loadTawkWidget(embedUrl) {
     if (tawkLoaded) return;
     tawkLoaded = true;
 
@@ -59,21 +77,6 @@
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
     window.Tawk_API.embedded = hostId;
-
-    if (login && login.userId && login.hash) {
-      window.Tawk_API.onLoad = function () {
-        try {
-          window.Tawk_API.login({
-            userId: login.userId,
-            hash: login.hash,
-            name: login.name || '',
-            email: login.email || '',
-          });
-        } catch (err) {
-          setStatus('Chat loaded. Visitor login could not be applied.');
-        }
-      };
-    }
 
     var script = document.createElement('script');
     script.async = true;
@@ -87,41 +90,41 @@
     showChat();
     setStatus('Loading chat…');
 
-    var visitor = await apiGet('/api/tawk/visitor');
-    if (!visitor.ok || !visitor.body || !visitor.body.ok) {
-      var config = await apiGet('/api/tawk/config');
-      if (config.ok && config.body && config.body.embedUrl) {
-        setStatus(
-          visitor.body && visitor.body.message
-            ? visitor.body.message
-            : 'Opening chat without Secure Mode login.',
-        );
-        loadTawkWidget(config.body.embedUrl, null);
-        return;
-      }
+    var config = await apiGet('/api/tawk/config');
+    if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
       setStatus(
-        (visitor.body && visitor.body.message) ||
+        (config.body && config.body.message) ||
           'Chat is not configured yet. Ask COHO to set TAWK_PROPERTY_ID and TAWK_WIDGET_ID on Hosting.',
       );
       return;
     }
 
-    var embedUrl = visitor.body.embedUrl;
-    if (!embedUrl) {
-      setStatus('Chat embed URL missing.');
-      return;
+    setStatus('Chat ready.');
+    loadTawkWidget(config.body.embedUrl);
+  }
+
+  async function openLibrary() {
+    showLibrary();
+    setLibraryStatus('Loading document library…');
+
+    var kbUrl = DEFAULT_KB_URL;
+    var config = await apiGet('/api/tawk/config');
+    if (config.ok && config.body && config.body.knowledgeBaseUrl) {
+      kbUrl = config.body.knowledgeBaseUrl;
     }
 
-    if (visitor.body.secureModeEnabled && visitor.body.login) {
-      setStatus('Chat ready. Identifying you securely…');
-      loadTawkWidget(embedUrl, visitor.body.login);
-    } else {
-      setStatus(
-        visitor.body.reason ||
-          'Chat ready. Secure Mode is off — widget loads without visitor login.',
-      );
-      loadTawkWidget(embedUrl, null);
+    if (libraryExternal) {
+      libraryExternal.href = kbUrl;
     }
+
+    if (!libraryLoaded && libraryFrame) {
+      libraryFrame.src = kbUrl;
+      libraryLoaded = true;
+    }
+
+    setLibraryStatus(
+      'Showing the Tawk Knowledge Base below. If the panel is blank (some browsers block the embed), use Open in new tab.',
+    );
   }
 
   document.getElementById('open-chat').addEventListener('click', function () {
@@ -130,7 +133,15 @@
       showChat();
     });
   });
+  document.getElementById('open-library').addEventListener('click', function () {
+    openLibrary().catch(function (err) {
+      setLibraryStatus(err && err.message ? err.message : 'Failed to open document library');
+      showLibrary();
+    });
+  });
   document.getElementById('back-home').addEventListener('click', showHome);
+  document.getElementById('back-home-library').addEventListener('click', showHome);
   document.getElementById('close-home').addEventListener('click', closeQuickView);
   document.getElementById('close-chat').addEventListener('click', closeQuickView);
+  document.getElementById('close-library').addEventListener('click', closeQuickView);
 })();

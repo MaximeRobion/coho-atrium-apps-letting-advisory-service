@@ -4,10 +4,7 @@
     "path": "/health",
     "method": "GET"
   },
-  "requestedCapabilities": [
-    "organisation.read",
-    "users.read"
-  ],
+  "requestedCapabilities": [],
   "config": {
     "mode": "native",
     "browserBaseUrl": null,

@@ -1,19 +1,18 @@
 # atrium-lettings-advice
 
-COHO Atrium seed app for the **Lettings Advice Service** (Julie’s Tawk.to chat).
+COHO Atrium seed app for the **Lettings Advice Service** (Julie’s Tawk.to chat + Knowledge Base).
 
 Private product app under `CompanyForLife/atrium-lettings-advice`. It is **not** part of the HouseShare monorepo. Persistent state is **SQLite** under `ATRIUM_DATA_DIR` (Hosting: `/data` on EFS) and holds **connection secrets only**. Support ownership: **COHO** (internal seed).
 
 Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-service-integration).
 
-## P0 scope
+## Scope
 
-- **Web app** quick view (`/ui`, `openPresentation: modal`): Home → Chat embed.
-- Chat = Tawk widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}`.
+- **Web app** quick view (`/ui`, `openPresentation: modal`): Home → **Document library** and **Chat**.
+- Chat = Tawk widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (code defaults to Julie’s LAS property/widget).
+- Document library = Tawk Knowledge Base `https://lettingadviceservice.tawk.help` (iframe when framing is allowed; always offer open-in-new-tab).
 - **Entitlement = Store install** (listed free until commercial terms + Store billing). No in-app billing, cancel, or tracking UI.
-- **Secure Mode** visitor login when `TAWK_API_KEY` is set: HMAC-SHA256 hex of lowercased OrganisationPerson Guid; `Tawk_API.login({ userId, hash, name: "{org} - {person}", email })`.
-- If `TAWK_API_KEY` is missing (or Secure Mode is off in Tawk admin), the widget still loads — login is skipped.
-- **Document library deferred** until Julie confirms the canonical docs URL.
+- **Secure Mode / visitor login is out** — another team shares the same Tawk property. Do **not** enable Secure Mode in Tawk admin for this app. The app does **not** call `Tawk_API.login`. `TAWK_API_KEY` is optional/unused; hash helpers remain as dead code only.
 
 ## Stack
 
@@ -23,10 +22,9 @@ Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-se
 
 ## Capabilities
 
-- `organisation.read` — org display name for visitor `name`
-- `users.read` — resolve opening manager (`personReference` → Guid / name / email)
+None required for the current chat + document library shell (`requestedCapabilities: []`). Store install alone is the entitlement. Public API identity scopes were only needed for Secure Mode visitor login (removed).
 
-No product webhooks or schedules in P0.
+No product webhooks or schedules in this release.
 
 ## Environment
 
@@ -39,50 +37,45 @@ Copy [`.env.example`](./.env.example). **Never commit `.env` or real secrets.**
 | `ATRIUM_FRAME_ANCESTORS` / `ATRIUM_PARENT_ORIGIN` | Hosting injects for iframe CSP / postMessage |
 | `TAWK_PROPERTY_ID` | Tawk property id (code default: Julie’s LAS property) |
 | `TAWK_WIDGET_ID` | Chat widget id (code default: Julie’s LAS chat widget) |
-| `TAWK_API_KEY` | Secure Mode JavaScript API key (env-only; degrade without it) |
+| `TAWK_KNOWLEDGE_BASE_URL` | Optional override; default `https://lettingadviceservice.tawk.help` |
+| `TAWK_API_KEY` | Unused (Secure Mode out). Leave empty; never commit a real key |
 
 COHO Public API base URL comes from `lifecycle.setup` (`data.apiBaseUrl`), not from env.
 
 ## Hosting secrets / Tawk (Labs → Prod)
 
-There is **no Store UI, Super Admin form, or Hosting console** for custom per-app env today. The provision worker only injects platform vars (`PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` from SM). Third-party secrets such as Tawk must be set by **ops on ECS / Secrets Manager** after the Hosted app is **Ready**.
+There is **no Store UI, Super Admin form, or Hosting console** for custom per-app env today. The provision worker only injects platform vars (`PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` from SM). Third-party overrides such as Tawk IDs can be set by **ops on ECS / Secrets Manager** after the Hosted app is **Ready**, but chat + KB work from **code defaults** without them.
 
-### Required runtime vars
+### Runtime vars
 
 | Variable | Notes |
 |----------|--------|
 | `TAWK_PROPERTY_ID` | Public embed id. App falls back to `687cb5a73606072bf84a6030` if unset. |
 | `TAWK_WIDGET_ID` | Public embed id. App falls back to `1j0jib5sb` if unset. |
-| `TAWK_API_KEY` | Secure Mode JavaScript API key. **Never commit.** Env/SM only; widget still loads without it (no visitor `login`). |
+| `TAWK_API_KEY` | **Unused.** Do not enable Secure Mode on this shared property. |
 
-Do **not** put `TAWK_API_KEY` in Store light/native config, catalogue copy, or the image.
+Do **not** put secrets in Store light/native config, catalogue copy, or the image.
 
 ### Labs (ops checklist)
 
 1. Register the Hosted app on Labs Store (GitHub + Dockerfile) and wait until provision state is **Ready**.
 2. Note the app slug / ECS service (Labs naming: `atrium-labs-<slug>`, cluster `AtriumHosting-LABS`, region `eu-west-2`). Browser host is `{slug}.labs.coho.software`.
-3. Add container env on the task definition (preserve existing `ATRIUM_*` / `PORT` / SM `ATRIUM_SETUP_SECRET`):
-   - `TAWK_PROPERTY_ID=687cb5a73606072bf84a6030`
-   - `TAWK_WIDGET_ID=1j0jib5sb`
-   - `TAWK_API_KEY=<from ops vault / project store — never git>`
-4. Prefer mapping `TAWK_API_KEY` from Secrets Manager as an ECS `secrets` entry when IAM allows; plaintext env on Labs is acceptable for dogfood only and must be documented as temporary.
-5. Register a new task definition revision, update the service, wait until stable.
-6. **Re-apply after every Hosted Update / re-provision** — `worker.sh` rewrites the task definition and only injects `ATRIUM_*` / `PORT`. Manual `TAWK_*` is wiped until the provisioner supports custom env.
-7. Enable **Tawk Secure Mode** in Tawk admin before relying on hashed visitor login (see Secure Mode notes below).
+3. Optional: add container env overrides for `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` if not using code defaults. **Do not** enable Tawk Secure Mode for dogfood.
+4. Register a new task definition revision only if you changed env; update the service, wait until stable.
+5. **Re-apply manual env after every Hosted Update / re-provision** — `worker.sh` rewrites the task definition and only injects `ATRIUM_*` / `PORT`. Prefer relying on code defaults until the provisioner supports custom env.
 
 ### Prod (same checklist before go-live)
 
 1. Confirm Hosted app is Ready on the production Hosting cluster.
-2. Set `TAWK_PROPERTY_ID`, `TAWK_WIDGET_ID`, and `TAWK_API_KEY` on the prod task definition (prefer SM for the API key).
-3. Never commit the API key; rotate if it was ever pasted into chat or a ticket.
-4. Enable Tawk Secure Mode for the property before launch.
-5. Expect the same re-apply after Hosted Update/re-provision until product supports custom Hosting env.
+2. Prefer code defaults for public widget IDs; override only if needed.
+3. Do **not** enable Secure Mode on the shared property.
+4. Expect the same re-apply after Hosted Update/re-provision until product supports custom Hosting env.
 
 ## Local UI
 
 ```bash
 npm install
-# Optional: export TAWK_PROPERTY_ID=… TAWK_WIDGET_ID=… TAWK_API_KEY=…
+# Optional: export TAWK_PROPERTY_ID=… TAWK_WIDGET_ID=…
 npm run dev
 ```
 
@@ -102,27 +95,21 @@ npm install
 export ATRIUM_SETUP_SECRET=dev-setup-secret
 export ATRIUM_DATA_DIR=./data
 export PORT=8080
-export TAWK_PROPERTY_ID=…
-export TAWK_WIDGET_ID=…
-# export TAWK_API_KEY=…   # optional
 npm start
 ```
 
 - Health: `GET http://localhost:8080/health`
 - Quick view (signed launch): `GET /ui?connectionReference=…&atriumUsageToken=…&atriumSignature=…`
-- Visitor payload: `GET /api/tawk/visitor` with Bearer usage token
+- Tawk config: `GET /api/tawk/config` with Bearer usage token
 - Manifest example: [`manifest.example.json`](./manifest.example.json)
 
-## Secure Mode notes
+## Secure Mode (out of scope)
 
-1. Enable **Secure Mode** in the Tawk admin for the property before dogfood (it was disabled when credentials were collected).
-2. Hash message = OrganisationPerson **Guid** string, lowercased (legacy LAS behaviour) — not email.
-3. Display name = `{AccountName} - {Forename Surname}`; email lowercased.
-4. Without `TAWK_API_KEY`, `/api/tawk/visitor` returns `secureModeEnabled: false` and `login: null`; the UI still embeds the widget.
+Do **not** enable Secure Mode in Tawk admin for this property (shared with another team). This app never calls `Tawk_API.login`. Historical HMAC helper code may remain in-tree as dead code; it is not exposed on a product route.
 
 ## CSP
 
-`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to` and `*.tawk.to` (including `wss://`). Keys-style tight CSP would block the widget.
+`/ui` keeps Hosting `frame-ancestors` and widens `script-src` / `frame-src` / `connect-src` / `img-src` for `embed.tawk.to`, `*.tawk.to` (including `wss://`), and the Knowledge Base host `lettingadviceservice.tawk.help` / `*.tawk.help`. Keys-style tight CSP would block chat and the library iframe.
 
 ## Dockerfile
 
@@ -130,7 +117,7 @@ npm start
 docker build --platform linux/amd64 -t atrium-apps/lettings-advice .
 ```
 
-Hosting injects `ATRIUM_*` / `PORT` only. Ops sets `TAWK_*` on ECS/SM (see **Hosting secrets / Tawk** above). Do not bake secrets into the image.
+Hosting injects `ATRIUM_*` / `PORT` only. Do not bake secrets into the image.
 
 ## Design
 
@@ -187,4 +174,4 @@ alias git-pushall='git push origin'
 
 ## Support ownership
 
-COHO owns this seed (bugs, Hosting, Store listing). Chat content and history live in Julie’s Tawk property; disconnect only wipes this app’s connection secrets. PII (name / email / org label) is sent to Tawk when Secure Mode login runs.
+COHO owns this seed (bugs, Hosting, Store listing). Chat content and history live in Julie’s Tawk property; disconnect only wipes this app’s connection secrets. No manager PII is sent to Tawk via Secure Mode login from this app.
