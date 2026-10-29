@@ -1,5 +1,5 @@
 /**
- * Documents tab: category cards → searchable list with View / Download.
+ * Documents tab: category filter cards + searchable list.
  * Expects DOCUMENT_CATALOGUE + helpers from bootstrap / documents-helpers.js.
  */
 (function () {
@@ -11,26 +11,26 @@
       ? DOCUMENT_CATALOGUE
       : [];
 
+  var CATS = ['guides', 'templates', 'videos'];
+
   var state = {
-    view: 'categories',
-    category: null,
+    category: firstCategoryWithDocs(),
     query: '',
   };
 
+  function firstCategoryWithDocs() {
+    for (var i = 0; i < CATS.length; i++) {
+      if (countDocumentsByCategory(catalogue, CATS[i]) > 0) return CATS[i];
+    }
+    return CATS[0];
+  }
+
   function categoryMeta(category) {
     var labels = DOCUMENT_CATEGORY_LABELS || {};
-    var count = countDocumentsByCategory(catalogue, category);
-    var variant =
-      category === 'guides'
-        ? 'card__filters--action'
-        : category === 'templates'
-          ? 'card__filters--progress'
-          : 'card__filters--active';
     return {
       category: category,
       label: labels[category] || category,
-      count: count,
-      variant: variant,
+      count: countDocumentsByCategory(catalogue, category),
     };
   }
 
@@ -63,63 +63,40 @@
     return escapeHtml(value).replace(/'/g, '&#39;');
   }
 
-  function bindCategoryCards() {
-    root.querySelectorAll('[data-category]').forEach(function (el) {
-      el.addEventListener('click', function (event) {
-        event.preventDefault();
-        if (el.getAttribute('aria-disabled') === 'true') return;
-        var category = el.getAttribute('data-category');
-        if (!category) return;
-        state.view = 'list';
-        state.category = category;
-        state.query = '';
-        render();
-      });
-    });
-  }
-
-  function renderCategories() {
-    var cats = ['guides', 'templates', 'videos'];
-    var cards = cats
-      .map(function (cat) {
-        var meta = categoryMeta(cat);
-        var inactive = meta.count === 0;
-        var variant = inactive ? 'card__filters--inactive' : meta.variant;
-        var attrs = inactive
-          ? 'aria-disabled="true" tabindex="-1"'
-          : 'href="javascript:void(0);" data-category="' + meta.category + '"';
-        var tag = inactive ? 'div' : 'a';
-        return (
-          '<div class="grid-span-12 grid-span-sm-6 grid-span-md-4">' +
-          '<' +
-          tag +
-          ' class="card card__filters ' +
-          variant +
-          '" ' +
-          attrs +
-          '>' +
-          '<div class="card__count">' +
-          meta.count +
-          '</div>' +
-          '<div class="card__title">' +
-          meta.label +
-          '</div>' +
-          '</' +
-          tag +
-          '>' +
-          '</div>'
-        );
-      })
-      .join('');
-
-    root.innerHTML =
-      '<section class="page__section page__section--narrow">' +
-      '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
-      cards +
-      '</div>' +
-      '</section>';
-
-    bindCategoryCards();
+  function filterCardsHtml() {
+    return CATS.map(function (cat) {
+      var meta = categoryMeta(cat);
+      var inactive = meta.count === 0;
+      var isActive = !inactive && state.category === meta.category;
+      var classes = 'card card__filters' + (inactive ? ' card__filters--inactive' : '');
+      var attrs = inactive
+        ? 'aria-disabled="true" tabindex="-1"'
+        : 'href="javascript:void(0);" data-category="' +
+          meta.category +
+          '"' +
+          (isActive ? ' aria-current="true"' : '');
+      var tag = inactive ? 'div' : 'a';
+      return (
+        '<div class="grid-span-12 grid-span-sm-4">' +
+        '<' +
+        tag +
+        ' class="' +
+        classes +
+        '" ' +
+        attrs +
+        '>' +
+        '<div class="card__count">' +
+        meta.count +
+        '</div>' +
+        '<div class="card__title">' +
+        meta.label +
+        '</div>' +
+        '</' +
+        tag +
+        '>' +
+        '</div>'
+      );
+    }).join('');
   }
 
   function listRowsHtml(filtered) {
@@ -177,6 +154,20 @@
     );
   }
 
+  function bindCategoryCards() {
+    root.querySelectorAll('[data-category]').forEach(function (el) {
+      el.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (el.getAttribute('aria-disabled') === 'true') return;
+        var category = el.getAttribute('data-category');
+        if (!category || category === state.category) return;
+        state.category = category;
+        state.query = '';
+        render();
+      });
+    });
+  }
+
   function bindListActions(filtered) {
     var byId = {};
     filtered.forEach(function (item) {
@@ -194,8 +185,7 @@
   }
 
   function refreshListResults() {
-    var category = state.category;
-    var inCategory = filterDocumentsByCategory(catalogue, category);
+    var inCategory = filterDocumentsByCategory(catalogue, state.category);
     var filtered = searchDocumentsByTitle(inCategory, state.query);
     var results = document.getElementById('documents-results');
     if (!results) return filtered;
@@ -204,33 +194,16 @@
     return filtered;
   }
 
-  function renderList() {
-    var category = state.category;
-    var meta = categoryMeta(category);
-    var inCategory = filterDocumentsByCategory(catalogue, category);
+  function render() {
+    var inCategory = filterDocumentsByCategory(catalogue, state.category);
     var filtered = searchDocumentsByTitle(inCategory, state.query);
 
     root.innerHTML =
       '<section class="page__section page__section--narrow">' +
-      '<div class="heading--section heading--has-button">' +
-      '<h2 class="heading--2">' +
-      escapeHtml(meta.label) +
-      '</h2>' +
-      '<div class="button__group">' +
-      '<div class="button__group-item">' +
-      '<button type="button" class="button button--secondary button--small button--icon" id="documents-back">' +
-      '<span class="icon" aria-hidden="true"><svg class="icon-arrow-left"><use href="#icon-arrow-left"></use></svg></span>' +
-      'Documents' +
-      '</button>' +
+      '<div class="grid grid--12 grid-gap-md" id="documents-category-grid">' +
+      filterCardsHtml() +
       '</div>' +
-      '</div>' +
-      '</div>' +
-      '<p class="u-text--small u-text-color--grey u-margin-bottom--10" id="documents-breadcrumb">' +
-      '<a href="javascript:void(0);" id="documents-crumb-root">Documents</a>' +
-      ' / ' +
-      escapeHtml(meta.label) +
-      '</p>' +
-      '<form class="form form--inline form--slimmer form--full-width" id="documents-search-form" novalidate>' +
+      '<form class="form form--inline form--slimmer form--full-width u-margin-top--10" id="documents-search-form" novalidate>' +
       '<div class="form__grid form__grid-2--small form__grid-4--medium">' +
       '<div class="form__grid-element">' +
       '<input id="documents-search" type="text" placeholder="Search by name" aria-label="Search by name" value="' +
@@ -254,18 +227,7 @@
       '</div>' +
       '</section>';
 
-    function goRoot(event) {
-      if (event) event.preventDefault();
-      state.view = 'categories';
-      state.category = null;
-      state.query = '';
-      render();
-    }
-
-    var back = document.getElementById('documents-back');
-    var crumb = document.getElementById('documents-crumb-root');
-    if (back) back.addEventListener('click', goRoot);
-    if (crumb) crumb.addEventListener('click', goRoot);
+    bindCategoryCards();
 
     var form = document.getElementById('documents-search-form');
     var input = document.getElementById('documents-search');
@@ -282,11 +244,6 @@
     }
 
     bindListActions(filtered);
-  }
-
-  function render() {
-    if (state.view === 'list' && state.category) renderList();
-    else renderCategories();
   }
 
   window.LasDocuments = {

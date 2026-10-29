@@ -305,6 +305,15 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(html, /Free templates and letters/);
     assert.doesNotMatch(html, /Video tutorials from Lettings Advice Service/);
     assert.doesNotMatch(html, /<h2 class="heading--2">Documents<\/h2>/);
+    assert.doesNotMatch(html, /id="documents-breadcrumb"/);
+    assert.doesNotMatch(html, /id="documents-back"/);
+    assert.match(html, /grid-span-sm-4/);
+    assert.match(html, /aria-current="true"/);
+    // Markup must not use coloured filter variants (class names still appear in inlined coho.css).
+    assert.doesNotMatch(
+      html,
+      /class="[^"]*card__filters--(?:action|progress|active)[^"]*"/,
+    );
     assert.match(html, /\[id\^=['"]tawk_/);
     assert.doesNotMatch(html, /Open in new tab/);
     assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
