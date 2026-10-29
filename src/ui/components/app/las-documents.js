@@ -131,39 +131,25 @@
           '</div>'
         );
       }
-      var canEmbed = !!youtubeEmbedUrl(item.url);
-      var watchNow = canEmbed
-        ? '<div class="button__group-item">' +
-          '<button type="button" class="button button--secondary button--small button--icon" data-action="watch-now" data-id="' +
-          escapeAttr(item.id) +
-          '">' +
-          '<span class="icon" aria-hidden="true"><svg class="icon-video"><use href="#icon-video"></use></svg></span>' +
-          'Watch now</button>' +
-          '</div>'
-        : '';
-      var watchYoutube =
+      if (!youtubeEmbedUrl(item.url)) {
+        return '<span class="u-text--small u-text-color--grey">Link pending</span>';
+      }
+      return (
         '<div class="button__group-item">' +
-        '<button type="button" class="button button--ghost button--small button--icon" data-action="watch-youtube" data-id="' +
+        '<button type="button" class="button button--ghost button--small button--icon" data-action="watch-now" data-id="' +
         escapeAttr(item.id) +
         '">' +
-        '<span class="icon" aria-hidden="true"><svg class="icon-open"><use href="#icon-open"></use></svg></span>' +
-        'Watch on YouTube</button>' +
-        '</div>';
-      return watchNow + watchYoutube;
+        '<span class="icon" aria-hidden="true"><svg class="icon-video"><use href="#icon-video"></use></svg></span>' +
+        'Watch</button>' +
+        '</div>'
+      );
     }
 
     return (
       '<div class="button__group-item">' +
-      '<button type="button" class="button button--secondary button--small" data-action="view" data-id="' +
+      '<button type="button" class="button button--ghost button--small" data-action="view" data-id="' +
       escapeAttr(item.id) +
       '">View</button>' +
-      '</div>' +
-      '<div class="button__group-item">' +
-      '<button type="button" class="button button--ghost button--small button--icon" data-action="download" data-id="' +
-      escapeAttr(item.id) +
-      '">' +
-      '<span class="icon" aria-hidden="true"><svg class="icon-download"><use href="#icon-download"></use></svg></span>' +
-      'Download</button>' +
       '</div>'
     );
   }
@@ -199,10 +185,7 @@
 
     return (
       '<table class="compact__table compact__table--narrow" id="documents-table">' +
-      '<thead><tr>' +
-      '<th class="width-f-350 one-line">Title</th>' +
-      '<th class="width-f-100 u-text-align--right">Actions</th>' +
-      '</tr></thead><tbody>' +
+      '<tbody>' +
       filtered
         .map(function (item) {
           var playing = state.playingVideoId === item.id;
@@ -277,11 +260,7 @@
           paintResults(filtered);
           return;
         }
-        if (action === 'watch-youtube') {
-          openUrl(youtubeWatchUrl(item.url), false);
-          return;
-        }
-        openUrl(item.url, action === 'download');
+        openUrl(item.url, false);
       });
     });
   }
