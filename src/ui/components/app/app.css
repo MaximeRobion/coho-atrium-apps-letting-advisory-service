@@ -47,20 +47,37 @@ body {
 }
 
 /* coho.css gives .page__section 3.75rem bottom at ≥48rem and only resets top for --narrow */
-#documents-root .page__section--narrow,
-#chat-out-of-hours .page__section--narrow {
+#documents-root .page__section--narrow {
   padding-top: 0;
   padding-bottom: 0;
 }
 
 #chat-out-of-hours {
   flex: 0 0 auto;
+  width: 100%;
   padding: 1rem 1rem 0;
   box-sizing: border-box;
 }
 
 #chat-out-of-hours[hidden] {
   display: none !important;
+}
+
+#chat-out-of-hours .form__message {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+/* Compact two-line offline notice: lead + hours with a tight gap. */
+#chat-ooh-lead {
+  margin-bottom: 0.25rem;
+}
+
+#chat-ooh-hours {
+  margin-top: 0;
 }
 
 #chat-error:not([hidden]) {

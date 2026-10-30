@@ -24,8 +24,7 @@
 
   var chatErrorEl = document.getElementById('chat-error');
   var outOfHoursEl = document.getElementById('chat-out-of-hours');
-  var oohStatusEl = document.getElementById('chat-ooh-status');
-  var oohNextEl = document.getElementById('chat-ooh-next');
+  var oohLeadEl = document.getElementById('chat-ooh-lead');
   var documentsHost = document.getElementById('documents-host');
   var tawkLoaded = false;
   var tawkForcedOffline = false;
@@ -56,21 +55,15 @@
   function showOutOfHours(status) {
     lastHoursStatus = status || lastHoursStatus || getChatHoursStatus();
     var hours = lastHoursStatus;
-    if (oohStatusEl) {
-      oohStatusEl.textContent = "We're currently offline.";
-    }
-    if (oohNextEl) {
+    if (oohLeadEl) {
       var next = hours.nextChangeText || '';
       if (hours.tawkOfflineDuringHours) {
-        oohNextEl.hidden = false;
-        oohNextEl.textContent =
-          'Advisors are not available right now. Please try again shortly, or during the hours below.';
+        oohLeadEl.textContent =
+          "We're currently offline. Advisors are not available right now — please try again shortly, or during the hours below.";
       } else if (next.indexOf('opens ') === 0) {
-        oohNextEl.hidden = false;
-        oohNextEl.textContent = 'Live chat ' + next + '.';
+        oohLeadEl.textContent = "We're currently offline. Live chat " + next + '.';
       } else {
-        oohNextEl.hidden = true;
-        oohNextEl.textContent = '';
+        oohLeadEl.textContent = "We're currently offline.";
       }
     }
     if (outOfHoursEl) outOfHoursEl.hidden = false;
