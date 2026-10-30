@@ -145,11 +145,14 @@
       );
     }
 
+    var label = item.category === 'templates' ? 'Download' : 'View';
     return (
       '<div class="button__group-item">' +
       '<button type="button" class="button button--ghost button--small" data-action="view" data-id="' +
       escapeAttr(item.id) +
-      '">View</button>' +
+      '">' +
+      label +
+      '</button>' +
       '</div>'
     );
   }
@@ -164,7 +167,7 @@
       escapeAttr(item.title) +
       '" src="' +
       escapeAttr(embed) +
-      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>' +
+      '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>' +
       '</div>' +
       '</td>'
     );

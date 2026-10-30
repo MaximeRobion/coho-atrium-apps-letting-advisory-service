@@ -25,59 +25,42 @@
   </svg>
 
   <main id="las-shell">
-    <div id="las-tabs" aria-label="Lettings Advice sections">
-      <div id="las-tab-chrome">
-        <div id="las-tablist" role="tablist">
-          <a href="javascript:void(0);" role="tab" id="nav-documents" aria-controls="panel-documents" aria-selected="true">Documents</a>
-          <a href="javascript:void(0);" role="tab" id="nav-chat" aria-controls="panel-chat" aria-selected="false">Chat</a>
+    <p id="chat-error" class="u-text--small u-margin-bottom--10" role="alert" hidden></p>
+    <div id="chat-out-of-hours" hidden>
+      <section class="page__section page__section--narrow">
+        <div class="form__message form__message--notification">
+          <div class="form__message-text u-padding--10">
+            <p id="chat-ooh-status" class="u-margin-bottom--10">We're currently offline.</p>
+            <p id="chat-ooh-next" class="u-margin-bottom--10" hidden></p>
+            <p class="u-text--small u-text-color--grey u-margin-bottom--none">
+              Opening hours (Europe/London): Mon-Fri 10:00-16:00, Sat 10:00-13:00, Sun closed.
+            </p>
+          </div>
         </div>
-      </div>
-      <div id="las-tab-panes">
-        <section id="panel-documents" role="tabpanel" aria-labelledby="nav-documents">
-          <div id="documents-host">
-            <div id="documents-root">
-              <section class="page__section page__section--narrow">
-                <div class="grid grid--12 grid-gap-md" id="documents-category-grid">
-                  <div class="grid-span-12 grid-span-sm-4">
-                    <a class="card card__filters" href="javascript:void(0);" aria-current="true">
-                      <div class="card__count">0</div>
-                      <div class="card__title">Guides</div>
-                    </a>
-                  </div>
-                  <div class="grid-span-12 grid-span-sm-4">
-                    <a class="card card__filters" href="javascript:void(0);">
-                      <div class="card__count">0</div>
-                      <div class="card__title">Templates</div>
-                    </a>
-                  </div>
-                  <div class="grid-span-12 grid-span-sm-4">
-                    <a class="card card__filters" href="javascript:void(0);">
-                      <div class="card__count">0</div>
-                      <div class="card__title">Videos</div>
-                    </a>
-                  </div>
-                </div>
-              </section>
+      </section>
+    </div>
+    <div id="documents-host">
+      <div id="documents-root">
+        <section class="page__section page__section--narrow">
+          <div class="grid grid--12 grid-gap-md" id="documents-category-grid">
+            <div class="grid-span-12 grid-span-sm-4">
+              <a class="card card__filters" href="javascript:void(0);" aria-current="true">
+                <div class="card__count">0</div>
+                <div class="card__title">Guides</div>
+              </a>
             </div>
-          </div>
-        </section>
-        <section id="panel-chat" role="tabpanel" aria-labelledby="nav-chat" hidden>
-          <p id="chat-error" class="u-text--small u-margin-bottom--10" role="alert" hidden></p>
-          <div id="chat-out-of-hours" hidden>
-            <section class="page__section page__section--narrow">
-              <div class="form__message form__message--notification">
-                <div class="form__message-text u-padding--10">
-                  <p id="chat-ooh-status" class="u-margin-bottom--10">We're currently offline.</p>
-                  <p id="chat-ooh-next" class="u-margin-bottom--10" hidden></p>
-                  <p class="u-text--small u-text-color--grey u-margin-bottom--none">
-                    Opening hours (Europe/London): Mon-Fri 10:00-16:00, Sat 10:00-13:00, Sun closed.
-                  </p>
-                </div>
-              </div>
-            </section>
-          </div>
-          <div id="tawk-host">
-            <div id="tawk-embed"></div>
+            <div class="grid-span-12 grid-span-sm-4">
+              <a class="card card__filters" href="javascript:void(0);">
+                <div class="card__count">0</div>
+                <div class="card__title">Templates</div>
+              </a>
+            </div>
+            <div class="grid-span-12 grid-span-sm-4">
+              <a class="card card__filters" href="javascript:void(0);">
+                <div class="card__count">0</div>
+                <div class="card__title">Videos</div>
+              </a>
+            </div>
           </div>
         </section>
       </div>

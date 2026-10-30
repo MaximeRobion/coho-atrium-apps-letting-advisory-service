@@ -281,20 +281,20 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(csp, /tawk\.help/);
     const html = await res.text();
     assert.match(html, /Lettings Advice Service/);
-    assert.match(html, /nav-documents/);
-    assert.match(html, /nav-chat/);
-    assert.match(html, />Documents</);
-    assert.match(html, />Chat</);
-    assert.match(html, /panel-documents/);
-    assert.match(html, /panel-chat/);
+    assert.doesNotMatch(html, /nav-documents/);
+    assert.doesNotMatch(html, /nav-chat/);
+    assert.doesNotMatch(html, /panel-chat/);
+    assert.doesNotMatch(html, /role="tablist"/);
     assert.match(html, /documents-root/);
     assert.match(html, /DOCUMENT_CATALOGUE/);
     assert.match(html, /LasDocuments/);
     assert.doesNotMatch(html, /Guides, free templates, and videos from Lettings Advice Service/);
     assert.doesNotMatch(html, /library-frame/);
     assert.doesNotMatch(html, /lettingadviceservice\.tawk\.help/);
-    assert.match(html, /Tawk_API\.embedded/);
+    assert.doesNotMatch(html, /Tawk_API\.embedded\s*=/);
     assert.match(html, /Tawk_API\.autoStart\s*=\s*false/);
+    assert.match(html, /Tawk_API\.showWidget/);
+    assert.doesNotMatch(html, /dockTawkWidgets/);
     assert.match(html, /getChatHoursStatus/);
     assert.match(html, /onStatusChange/);
     assert.match(html, /chat-out-of-hours/);
@@ -312,6 +312,7 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.match(html, /aria-current="true"/);
     assert.match(html, /documents-row-title/);
     assert.match(html, /'Watch<\/button>'/);
+    assert.match(html, /category === 'templates' \? 'Download' : 'View'/);
     assert.doesNotMatch(html, /Watch now/);
     assert.doesNotMatch(html, /Watch on YouTube/);
     assert.doesNotMatch(html, /data-action="download"/);
@@ -325,7 +326,8 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
       html,
       /class="[^"]*card__filters--(?:action|progress|active)[^"]*"/,
     );
-    assert.match(html, /\[id\^=['"]tawk_/);
+    assert.match(res.headers.get('permissions-policy') || '', /fullscreen/);
+    assert.match(res.headers.get('referrer-policy') || '', /strict-origin-when-cross-origin/);
     assert.doesNotMatch(html, /Open in new tab/);
     assert.doesNotMatch(html, /Showing the Tawk Knowledge Base/);
     assert.doesNotMatch(html, /Chat ready/);

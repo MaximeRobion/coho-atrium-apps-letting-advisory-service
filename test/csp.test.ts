@@ -5,7 +5,10 @@ import {
   DEFAULT_FRAME_ANCESTORS,
   sanitizeFrameAncestors,
 } from '../src/ui/csp.js';
-import { buildQuickViewCsp } from '../src/ui/tawkCsp.js';
+import {
+  buildQuickViewCsp,
+  buildQuickViewPermissionsPolicy,
+} from '../src/ui/tawkCsp.js';
 
 const previousAncestors = process.env.ATRIUM_FRAME_ANCESTORS;
 const previousParent = process.env.ATRIUM_PARENT_ORIGIN;
@@ -42,6 +45,17 @@ test('Tawk CSP keeps frame-ancestors and allows embed hosts (no KB iframe)', () 
   assert.match(csp, /font-src[^;]*https:\/\/embed\.tawk\.to/);
   assert.match(csp, /script-src[^;]*https:\/\/cdn\.jsdelivr\.net/);
   assert.match(csp, /style-src[^;]*https:\/\/cdn\.jsdelivr\.net/);
+  assert.match(csp, /connect-src[^;]*https:\/\/www\.youtube\.com/);
+  assert.match(csp, /media-src/);
+  assert.match(csp, /worker-src/);
+});
+
+test('Permissions-Policy allows YouTube and Tawk fullscreen', () => {
+  const policy = buildQuickViewPermissionsPolicy();
+  assert.match(policy, /fullscreen=\(self/);
+  assert.match(policy, /youtube-nocookie\.com/);
+  assert.match(policy, /embed\.tawk\.to/);
+  assert.match(policy, /autoplay=/);
 });
 
 test('Dockerfile does not bake Tawk secrets or frame-ancestors', () => {
