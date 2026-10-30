@@ -222,7 +222,7 @@
       if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
         setChatError(
           (config.body && config.body.message) ||
-            'Chat is not configured yet. Ask COHO to set TAWK_PROPERTY_ID and TAWK_WIDGET_ID on Hosting.',
+            'Chat is not configured yet. Set TAWK_PROPERTY_ID and TAWK_WIDGET_ID in Hosting runtime secrets (or local .env).',
         );
         return;
       }

@@ -44,7 +44,7 @@ Remote: `CompanyForLife/atrium-lettings-advice` (`main`).
 ## Hosting — remaining steps
 
 1. Register **Hosted** app on Labs pointing at this GitHub repo + Dockerfile (`atrium-apps/lettings-advice`).
-2. Prefer code defaults for public `TAWK_*` IDs; do **not** enable Secure Mode.
+2. Set public `TAWK_*` IDs via Hosting runtime secrets; do **not** enable Secure Mode.
 3. Set `browserBaseUrl` to the public Hosting URL; keep runtime BaseUrl private.
 4. List as **free** seed; smoke health, home, document library, chat, disconnect.
 5. After internal gate sign-off, short-cut draft → listed for Labs dogfood.
