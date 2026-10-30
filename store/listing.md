@@ -31,7 +31,7 @@ Documents catalogue with guides, free templates, and Julie’s library videos; T
 
 # Pre-requisites
 
-Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Tawk property/widget IDs default in code; Hosting may override TAWK_* — the Secure Mode API key is unused.
+Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.
 
 # Background tasks
 

@@ -28,7 +28,7 @@ export async function handleProductApi(
       propertyId: tawk.propertyId || null,
       widgetId: tawk.widgetId || null,
       embedUrl: tawk.embedUrl,
-      knowledgeBaseUrl: tawk.knowledgeBaseUrl,
+      knowledgeBaseUrl: tawk.knowledgeBaseUrl || null,
       configured: Boolean(tawk.embedUrl),
     });
     return true;
