@@ -46,32 +46,41 @@ COHO Public API base URL comes from `lifecycle.setup` (`data.apiBaseUrl`), not f
 
 ## Hosting secrets / Tawk (Labs → Prod)
 
-There is **no Store UI, Super Admin form, or Hosting console** for custom per-app env today. The provision worker only injects platform vars (`PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` from SM). Third-party overrides such as Tawk IDs can be set by **ops on ECS / Secrets Manager** after the Hosted app is **Ready**, but chat + KB work from **code defaults** without them.
+Platform injects `PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` on every provision. Anything else (including optional Tawk overrides) belongs in **Hosting runtime secrets** — Liam’s durable key/value map (HouseShare [#5763](https://github.com/CompanyForLife/HouseShare/pull/5763) / [#5765](https://github.com/CompanyForLife/HouseShare/pull/5765)). Saving the map on a Ready hosted app re-provisions and injects each key as container env from the per-app Secrets Manager `Env` document. Do **not** hand-edit ECS task definitions: the next Hosted Update wipes them.
+
+Chat works from **code defaults** for Julie’s public property/widget IDs when those keys are unset. Local/dev still forces the COHO test widget (see Local UI).
 
 ### Runtime vars
 
 | Variable | Notes |
 |----------|--------|
-| `TAWK_PROPERTY_ID` | Public embed id. App falls back to `687cb5a73606072bf84a6030` if unset. |
-| `TAWK_WIDGET_ID` | Public embed id. App falls back to `1j0jib5sb` if unset. |
-| `TAWK_API_KEY` | **Unused.** Do not enable Secure Mode on this shared property. |
+| `TAWK_PROPERTY_ID` | Optional override. Hosting default: Julie `687cb5a73606072bf84a6030`. |
+| `TAWK_WIDGET_ID` | Optional override. Hosting default: Julie `1j0jib5sb`. |
+| `TAWK_API_KEY` | **Unused** (Secure Mode out). Leave unset; do not enable Secure Mode on this shared property. |
 
 Do **not** put secrets in Store light/native config, catalogue copy, or the image.
+
+### Set / clear Hosting runtime secrets
+
+- **UI:** My apps / partner portal / organisation Store manage / Super Admin review — **Hosting runtime secrets** editor
+- **API:** `PUT /v1.1/public/atrium/apps/{appReference}/runtime-env` (full-replace map); `DELETE …/runtime-env/{keyName}` for one key
+- **MCP:** `PutAtriumRuntimeEnv` / `DeleteAtriumRuntimeEnvKey` (and publisher variants)
+- Values are write-only on list endpoints. Reserved names (`PORT`, `ATRIUM_*`, `AWS_*`, …) cannot be overridden.
+- Manifest may declare expected keys via `runtimeEnv` (see `manifest.example.json`). This app does **not** mark Tawk keys `required` — defaults cover Hosting.
 
 ### Labs (ops checklist)
 
 1. Register the Hosted app on Labs Store (GitHub + Dockerfile) and wait until provision state is **Ready**.
-2. Note the app slug / ECS service (Labs naming: `atrium-labs-<slug>`, cluster `AtriumHosting-LABS`, region `eu-west-2`). Browser host is `{slug}.labs.coho.software`.
-3. Optional: add container env overrides for `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` if not using code defaults. **Do not** enable Tawk Secure Mode for dogfood.
-4. Register a new task definition revision only if you changed env; update the service, wait until stable.
-5. **Re-apply manual env after every Hosted Update / re-provision** — `worker.sh` rewrites the task definition and only injects `ATRIUM_*` / `PORT`. Prefer relying on code defaults until the provisioner supports custom env.
+2. Browser host is `{slug}.labs.coho.software` (this app: `letting-advi-ce2992b1.labs.coho.software`).
+3. Prefer code defaults for Julie’s public IDs. Only set `TAWK_*` in **Hosting runtime secrets** if you need an override — then save (Ready apps re-provision automatically).
+4. **Do not** enable Tawk Secure Mode for dogfood.
+5. After a Hosted Update, check the runtime-secrets editor (or SM `Env`) if you previously relied on hand-edited ECS env — those keys are gone unless they live in runtime secrets.
 
 ### Prod (same checklist before go-live)
 
 1. Confirm Hosted app is Ready on the production Hosting cluster.
-2. Prefer code defaults for public widget IDs; override only if needed.
+2. Prefer code defaults for public widget IDs; override via runtime secrets only if needed.
 3. Do **not** enable Secure Mode on the shared property.
-4. Expect the same re-apply after Hosted Update/re-provision until product supports custom Hosting env.
 
 ## Local UI
 

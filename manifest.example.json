@@ -5,6 +5,26 @@
     "method": "GET"
   },
   "requestedCapabilities": [],
+  "runtimeEnv": [
+    {
+      "name": "TAWK_PROPERTY_ID",
+      "secret": false,
+      "required": false,
+      "description": "Optional. Overrides Julie LAS Tawk property id (code default 687cb5a73606072bf84a6030)."
+    },
+    {
+      "name": "TAWK_WIDGET_ID",
+      "secret": false,
+      "required": false,
+      "description": "Optional. Overrides Julie LAS Tawk Inline widget id (code default 1j0jib5sb)."
+    },
+    {
+      "name": "TAWK_API_KEY",
+      "secret": true,
+      "required": false,
+      "description": "Unused while Secure Mode is out. Do not enable Secure Mode on the shared property."
+    }
+  ],
   "config": {
     "mode": "native",
     "browserBaseUrl": null,
