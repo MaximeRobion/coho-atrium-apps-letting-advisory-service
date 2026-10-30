@@ -15,7 +15,9 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
   const tawkWs = 'wss://*.tawk.to wss://tawk.to';
   // Tawk messenger pulls emoji assets from jsDelivr.
   const jsdelivr = 'https://cdn.jsdelivr.net';
-  // Documents may open YouTube videos in a new window; keep frames for safety.
+  // Documents Watch embeds + Tawk may host YouTube inside the messenger.
+  const youtubeHttps =
+    'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com https://*.youtube.com https://*.ytimg.com https://*.googlevideo.com';
   const youtubeFrames =
     'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com';
 
@@ -25,12 +27,26 @@ export function buildQuickViewCsp(frameAncestorsEnv?: string): string {
     `script-src 'unsafe-inline' ${tawkHttps} ${jsdelivr}`,
     `style-src 'unsafe-inline' https://fonts.googleapis.com ${tawkHttps} ${jsdelivr}`,
     `font-src https://fonts.gstatic.com ${tawkHttps} data:`,
-    `connect-src 'self' ${tawkHttps} ${tawkWs}`,
-    `img-src 'self' data: blob: ${tawkHttps} ${jsdelivr} https://tawk.link https://*.amazonaws.com`,
+    `connect-src 'self' ${tawkHttps} ${tawkWs} ${youtubeHttps}`,
+    `img-src 'self' data: blob: ${tawkHttps} ${jsdelivr} https://tawk.link https://*.amazonaws.com ${youtubeHttps}`,
+    `media-src 'self' blob: ${tawkHttps} ${youtubeHttps}`,
+    `worker-src 'self' blob:`,
     `frame-src ${tawkHttps} ${youtubeFrames}`,
     `child-src ${tawkHttps} ${youtubeFrames}`,
     "base-uri 'none'",
     // Tawk's composer can POST to tawk hosts; 'self' alone drops visitor messages.
     `form-action 'self' ${tawkHttps}`,
   ].join('; ');
+}
+
+/** Allow YouTube / Tawk nested frames to use fullscreen + autoplay inside /ui. */
+export function buildQuickViewPermissionsPolicy(): string {
+  const youtube =
+    'https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com';
+  const tawk = 'https://embed.tawk.to https://*.tawk.to https://tawk.to';
+  return [
+    `fullscreen=(self ${youtube} ${tawk})`,
+    `autoplay=(self ${youtube} ${tawk})`,
+    `clipboard-write=(self ${tawk})`,
+  ].join(', ');
 }
