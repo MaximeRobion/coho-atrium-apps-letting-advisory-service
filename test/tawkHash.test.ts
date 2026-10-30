@@ -52,13 +52,13 @@ test('readTawkConfig uses env IDs only (no atrium-dev override)', () => {
   const cfg = readTawkConfig({
     ATRIUM_DEV_MODE: '1',
     NODE_ENV: 'development',
-    TAWK_PROPERTY_ID: '687cb5a73606072bf84a6030',
-    TAWK_WIDGET_ID: '1j0jib5sb',
+    TAWK_PROPERTY_ID: 'test-property-id',
+    TAWK_WIDGET_ID: 'test-widget-id',
   });
-  assert.equal(cfg.propertyId, '687cb5a73606072bf84a6030');
-  assert.equal(cfg.widgetId, '1j0jib5sb');
+  assert.equal(cfg.propertyId, 'test-property-id');
+  assert.equal(cfg.widgetId, 'test-widget-id');
   assert.equal(
     cfg.embedUrl,
-    'https://embed.tawk.to/687cb5a73606072bf84a6030/1j0jib5sb',
+    'https://embed.tawk.to/test-property-id/test-widget-id',
   );
 });
