@@ -1,5 +1,5 @@
 /* Quick-view chrome — injected into served /ui only (static HTML stays on coho.css for check:design).
-   Tab strip mirrors atrium-bin-rota; styled by id so check:design does not see unknown classes. */
+   Documents page + floating Inline Tawk bubble (same pattern as Julie's livechat site). */
 
 html,
 body {
@@ -23,103 +23,7 @@ body {
   padding: 0;
 }
 
-#las-tabs {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-}
-
-#las-tab-chrome {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: flex-end;
-  margin: 0;
-  padding: 0 1rem;
-  border-bottom: 1px solid var(--color-grey-light, #ccc);
-}
-
-#las-tablist {
-  display: flex;
-  align-items: flex-end;
-  flex: 1 1 auto;
-  min-width: 0;
-  margin: 0;
-}
-
-#las-tablist [role='tab'] {
-  display: inline-block;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text, #333);
-  text-decoration: none;
-  border: none;
-  border-radius: 0.25rem;
-  margin-bottom: 0.25rem;
-  cursor: pointer;
-}
-
-#las-tablist [role='tab']:hover {
-  color: var(--color-cyan-dark, #0a7ea4);
-}
-
-#las-tablist [role='tab']:focus {
-  outline: 0;
-}
-
-#las-tablist [role='tab'][aria-selected='true'] {
-  font-weight: 700;
-  color: var(--color-text, #333);
-  border-bottom: 4px solid var(--color-magenta, #c4007a);
-  margin-bottom: 0;
-  cursor: default;
-}
-
-:root[data-theme='dark'] #las-tab-chrome,
-body.coho__dark #las-tab-chrome {
-  border-bottom-color: #959595;
-}
-
-:root[data-theme='dark'] #las-tablist [role='tab'],
-:root[data-theme='dark'] #las-tablist [role='tab'][aria-selected='true'],
-body.coho__dark #las-tablist [role='tab'],
-body.coho__dark #las-tablist [role='tab'][aria-selected='true'] {
-  color: #cccccc;
-}
-
-:root[data-theme='dark'] #las-tablist [role='tab']:hover,
-body.coho__dark #las-tablist [role='tab']:hover {
-  color: var(--color-cyan, #4db8d9);
-}
-
-#las-tab-panes {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  background: transparent;
-}
-
-#panel-documents,
-#panel-chat {
-  display: none;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-#panel-documents:not([hidden]),
-#panel-chat:not([hidden]) {
-  display: flex;
-}
-
-#documents-host,
-#tawk-host {
+#documents-host {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -130,12 +34,8 @@ body.coho__dark #las-tablist [role='tab']:hover {
   padding: 0;
   border: 0;
   border-radius: 0;
-  overflow: hidden;
-  background: var(--color-white, #fff);
-}
-
-#documents-host {
   overflow: auto;
+  background: var(--color-white, #fff);
 }
 
 #documents-root {
@@ -150,6 +50,21 @@ body.coho__dark #las-tablist [role='tab']:hover {
 #chat-out-of-hours .page__section--narrow {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+#chat-out-of-hours {
+  flex: 0 0 auto;
+  padding: 1rem 1rem 0;
+  box-sizing: border-box;
+}
+
+#chat-out-of-hours[hidden] {
+  display: none !important;
+}
+
+#chat-error:not([hidden]) {
+  flex: 0 0 auto;
+  margin: 0.75rem 1rem 0;
 }
 
 /* Category filters: white tile, COHO blue type; 3-up from sm (35rem), stack on mobile.
@@ -197,7 +112,7 @@ body.coho__dark #las-tablist [role='tab']:hover {
   color: var(--color-grey, #5f5f5f);
 }
 
-/* Document rows: bottom divider (like desktop narrow table); stack on mobile */
+/* Document rows: bottom divider; stack below sm, title+action on one line from 35rem */
 #documents-table.compact__table tr {
   flex-wrap: wrap;
   align-items: center;
@@ -296,55 +211,4 @@ body.coho__dark #las-tablist [role='tab']:hover {
   #documents-table .documents-row-actions .button__group {
     justify-content: flex-end;
   }
-}
-
-#tawk-embed,
-#tawk-host [id^='tawk_'] {
-  display: block;
-  flex: 1 1 auto;
-  width: 100% !important;
-  min-width: 100%;
-  height: 100% !important;
-  min-height: 100%;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Tawk renames #tawk-embed to #tawk_<propertyId> for Tawk_API.embedded — keep sizing via id prefix. */
-#tawk-host iframe,
-#tawk-embed iframe,
-#tawk-host [id^='tawk_'] iframe {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  border: 0 !important;
-  display: block !important;
-}
-
-#chat-error:not([hidden]) {
-  flex: 0 0 auto;
-  margin: 0.75rem 1rem 0;
-}
-
-#chat-out-of-hours {
-  display: none;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-#chat-out-of-hours:not([hidden]) {
-  display: block;
-}
-
-#panel-chat.is-out-of-hours #tawk-host {
-  display: none !important;
-}
-
-#panel-chat.is-out-of-hours #chat-out-of-hours:not([hidden]) {
-  display: block;
 }

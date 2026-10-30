@@ -22,18 +22,11 @@
 
   postToParent({ type: 'atrium.quickView.ready' });
 
-  var TAB_DOCUMENTS = 'documents';
-  var TAB_CHAT = 'chat';
-  var navDocuments = document.getElementById('nav-documents');
-  var navChat = document.getElementById('nav-chat');
-  var panelDocuments = document.getElementById('panel-documents');
-  var panelChat = document.getElementById('panel-chat');
   var chatErrorEl = document.getElementById('chat-error');
   var outOfHoursEl = document.getElementById('chat-out-of-hours');
   var oohStatusEl = document.getElementById('chat-ooh-status');
   var oohNextEl = document.getElementById('chat-ooh-next');
-  var embedHost = document.getElementById('tawk-embed');
-  var tawkHost = document.getElementById('tawk-host');
+  var documentsHost = document.getElementById('documents-host');
   var tawkLoaded = false;
   var tawkForcedOffline = false;
   var chatLoading = false;
@@ -45,35 +38,8 @@
       : typeof DOCUMENT_CATALOGUE !== 'undefined' &&
         catalogueHasDocuments(DOCUMENT_CATALOGUE);
 
-  if (!documentsEnabled) {
-    if (navDocuments) navDocuments.hidden = true;
-    if (panelDocuments) panelDocuments.hidden = true;
-  }
-
-  function tabStorageKey() {
-    return 'las:' + CONNECTION_REFERENCE + ':activeTab';
-  }
-
-  function readStoredTab() {
-    try {
-      var raw = localStorage.getItem(tabStorageKey());
-      if (raw === TAB_CHAT) return TAB_CHAT;
-      if (raw === TAB_DOCUMENTS && documentsEnabled) return TAB_DOCUMENTS;
-      // Legacy key from Library tab.
-      if (raw === 'library' && documentsEnabled) return TAB_DOCUMENTS;
-    } catch (e) {
-      /* private mode / blocked storage */
-    }
-    return documentsEnabled ? TAB_DOCUMENTS : TAB_CHAT;
-  }
-
-  function writeStoredTab(tab) {
-    if (tab !== TAB_DOCUMENTS && tab !== TAB_CHAT) return;
-    try {
-      localStorage.setItem(tabStorageKey(), tab);
-    } catch (e) {
-      /* ignore */
-    }
+  if (!documentsEnabled && documentsHost) {
+    documentsHost.hidden = true;
   }
 
   function setChatError(text) {
@@ -108,30 +74,24 @@
       }
     }
     if (outOfHoursEl) outOfHoursEl.hidden = false;
-    if (panelChat) panelChat.classList.add('is-out-of-hours');
-    if (tawkHost) tawkHost.setAttribute('aria-hidden', 'true');
   }
 
   function hideOutOfHours() {
     if (outOfHoursEl) outOfHoursEl.hidden = true;
-    if (panelChat) panelChat.classList.remove('is-out-of-hours');
-    if (tawkHost) tawkHost.removeAttribute('aria-hidden');
   }
 
-  function teardownTawkForOutOfHours() {
+  function concealTawkChat() {
     try {
       if (window.Tawk_API) {
-        if (typeof window.Tawk_API.shutdown === 'function') {
-          window.Tawk_API.shutdown();
-        } else if (typeof window.Tawk_API.hideWidget === 'function') {
+        if (typeof window.Tawk_API.minimize === 'function') {
+          window.Tawk_API.minimize();
+        }
+        if (typeof window.Tawk_API.hideWidget === 'function') {
           window.Tawk_API.hideWidget();
         }
       }
     } catch (err) {
-      /* ignore Tawk teardown errors */
-    }
-    if (embedHost) {
-      embedHost.innerHTML = '';
+      /* ignore */
     }
   }
 
@@ -146,39 +106,20 @@
       nextChangeText: hours.isOpen ? '' : hours.nextChangeText,
       tawkOfflineDuringHours: hours.isOpen,
     });
-    teardownTawkForOutOfHours();
-  }
-
-  function showTab(tab) {
-    var onChat = tab === TAB_CHAT;
-    writeStoredTab(onChat ? TAB_CHAT : TAB_DOCUMENTS);
-
-    if (panelDocuments) panelDocuments.hidden = onChat || !documentsEnabled;
-    panelChat.hidden = !onChat;
-    if (navDocuments) {
-      navDocuments.setAttribute('aria-selected', onChat || !documentsEnabled ? 'false' : 'true');
-    }
-    navChat.setAttribute('aria-selected', onChat ? 'true' : 'false');
+    concealTawkChat();
   }
 
   /**
-   * Tawk embedded mode mounts into the element whose id equals Tawk_API.embedded.
-   * It renames #tawk-embed to #tawk_<propertyId>. Size that host with [id^="tawk_"] CSS
-   * (not #tawk-embed alone) or the widget collapses to the clipped bubble / tawk.link state.
-   *
-   * autoStart=false avoids flashing the offline ticket form before we read status.
+   * Same mode as https://lettingsadviceservice.co.uk/livechat:
+   * Inline floating bubble on the Documents page (no Chat tab, no Tawk_API.embedded).
+   * Embedded mode on Julie's Inline widget IDs collapses the composer and blocks sends.
    */
   function loadTawkWidget(embedUrl) {
-    if (tawkLoaded || !embedHost) return;
+    if (tawkLoaded) return;
     tawkLoaded = true;
-
-    var propertyId = embedUrl.split('/')[3] || '';
-    var hostId = 'tawk_' + propertyId;
-    embedHost.id = hostId;
 
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
-    window.Tawk_API.embedded = hostId;
     window.Tawk_API.autoStart = false;
 
     window.Tawk_API.onStatusChange = function (status) {
@@ -201,14 +142,20 @@
         return;
       }
 
-      // FORCE_CHAT_OPEN still calls start() when Tawk reports offline (local dogfood /
-      // empty agent roster); otherwise the composer mounts but never sends.
       try {
         if (typeof window.Tawk_API.start === 'function') {
           window.Tawk_API.start();
         }
       } catch (err) {
-        /* if start fails, leave embed as-is */
+        /* ignore */
+      }
+
+      try {
+        if (typeof window.Tawk_API.showWidget === 'function') {
+          window.Tawk_API.showWidget();
+        }
+      } catch (err) {
+        /* ignore */
       }
     };
 
@@ -230,7 +177,6 @@
       lastHoursStatus = hours;
 
       if (!hours.isOpen || tawkForcedOffline) {
-        // Do not mount Tawk (avoids the offline ticket form).
         showOutOfHours(
           tawkForcedOffline
             ? {
@@ -241,13 +187,20 @@
               }
             : hours,
         );
+        concealTawkChat();
         return;
       }
 
       hideOutOfHours();
 
       if (tawkLoaded) {
-        // Already embedded earlier this session while open.
+        try {
+          if (typeof window.Tawk_API.showWidget === 'function') {
+            window.Tawk_API.showWidget();
+          }
+        } catch (err) {
+          /* ignore */
+        }
         return;
       }
 
@@ -260,7 +213,6 @@
         return;
       }
 
-      // Re-check hours after the network round-trip.
       hours = getChatHoursStatus();
       lastHoursStatus = hours;
       if (!hours.isOpen) {
@@ -276,35 +228,7 @@
     }
   }
 
-  function openDocumentsTab() {
-    if (!documentsEnabled) {
-      openChatTab();
-      return;
-    }
-    showTab(TAB_DOCUMENTS);
-  }
-
-  function openChatTab() {
-    showTab(TAB_CHAT);
-    ensureChat().catch(function (err) {
-      setChatError(err && err.message ? err.message : 'Failed to open chat');
-    });
-  }
-
-  if (navDocuments) {
-    navDocuments.addEventListener('click', function (event) {
-      event.preventDefault();
-      openDocumentsTab();
-    });
-  }
-  navChat.addEventListener('click', function (event) {
-    event.preventDefault();
-    openChatTab();
+  ensureChat().catch(function (err) {
+    setChatError(err && err.message ? err.message : 'Failed to open chat');
   });
-
-  if (readStoredTab() === TAB_CHAT || !documentsEnabled) {
-    openChatTab();
-  } else {
-    openDocumentsTab();
-  }
 })();
