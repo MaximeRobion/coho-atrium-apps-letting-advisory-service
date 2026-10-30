@@ -202,6 +202,9 @@ test('signed empty config schema/get/put', async () => {
 });
 
 test('tawk config returns embed + knowledge base; never exposes api key', async () => {
+  process.env.TAWK_PROPERTY_ID = '687cb5a73606072bf84a6030';
+  process.env.TAWK_WIDGET_ID = '1j0jib5sb';
+  process.env.TAWK_KNOWLEDGE_BASE_URL = 'https://lettingadviceservice.tawk.help';
   process.env.TAWK_API_KEY = 'unit-test-api-key-must-not-leak';
 
   await withServer(async (port) => {
@@ -231,6 +234,31 @@ test('tawk config returns embed + knowledge base; never exposes api key', async 
     assert.equal(body.secureModeEnabled, undefined);
     const raw = JSON.stringify(body);
     assert.doesNotMatch(raw, /unit-test-api-key/);
+  });
+});
+
+test('tawk config reports unconfigured when TAWK_* env unset', async () => {
+  await withServer(async (port) => {
+    repo.upsertConnection({
+      connectionReference: CONNECTION,
+      apiKey: 'k',
+      apiBaseUrl: 'https://api.example.com',
+      signingSecret: 'connection-signing-secret',
+    });
+
+    const res = await fetch(`http://127.0.0.1:${port}/api/tawk/config`, {
+      headers: {
+        Authorization: `Bearer ${usageTokenFor()}`,
+        'X-Atrium-Connection-Reference': CONNECTION,
+      },
+    });
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as Record<string, unknown>;
+    assert.equal(body.ok, true);
+    assert.equal(body.embedUrl, null);
+    assert.equal(body.configured, false);
+    assert.equal(body.propertyId, null);
+    assert.equal(body.widgetId, null);
   });
 });
 

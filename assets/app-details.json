@@ -6,6 +6,6 @@
   "logo": "logo.png",
   "fullDescription": "A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat and a Documents catalogue (guides, free templates, and videos scraped from Julie\u2019s library) for connected organisations. Store install is the entitlement (listed free until commercial terms and Store billing). Secure Mode visitor login is not used \u2014 the Tawk property is shared with another team.",
   "whatItCanDo": "Open a signed quick view from the Store. Browse guides, free templates, and video tutorials from Lettings Advice Service. Start a Tawk chat with the advice team. Disconnect wipes this app\u2019s connection secrets from SQLite.",
-  "prerequisites": "Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Tawk property/widget IDs default in code; Hosting may override TAWK_* \u2014 the Secure Mode API key is unused.",
+  "prerequisites": "Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Set TAWK_PROPERTY_ID and TAWK_WIDGET_ID in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.",
   "backgroundTasks": "None in P0. No product schedules or domain event webhooks. Entitlement is the Store connection only; there is no in-app billing UI."
 }
