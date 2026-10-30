@@ -292,8 +292,10 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(html, /library-frame/);
     assert.doesNotMatch(html, /lettingadviceservice\.tawk\.help/);
     assert.doesNotMatch(html, /Tawk_API\.embedded\s*=/);
-    assert.match(html, /Tawk_API\.autoStart\s*=\s*false/);
+    assert.match(html, /Tawk_API\.autoStart\s*=\s*forceOpen\s*\?\s*true\s*:\s*false/);
+    assert.match(html, /FORCE_CHAT_OPEN = false/);
     assert.match(html, /Tawk_API\.showWidget/);
+    assert.match(html, /Tawk_API\.maximize/);
     assert.doesNotMatch(html, /dockTawkWidgets/);
     assert.match(html, /getChatHoursStatus/);
     assert.match(html, /onStatusChange/);

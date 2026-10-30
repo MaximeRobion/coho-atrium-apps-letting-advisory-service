@@ -11,7 +11,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  overflow: hidden;
+  /* Keep scroll on #documents-host; do not clip Tawk's position:fixed bubble. */
+  overflow: visible;
 }
 
 #las-shell {

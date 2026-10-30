@@ -77,11 +77,12 @@ Do **not** put secrets in Store light/native config, catalogue copy, or the imag
 
 ```bash
 npm install
-# Optional: export TAWK_PROPERTY_ID=… TAWK_WIDGET_ID=…
 npm run dev
 ```
 
 Prints a localhost `/ui` URL (unsigned; requires `NODE_ENV=development` + `ATRIUM_DEV_MODE=1`).
+
+Local/dev **always** loads the COHO test Inline widget (`6ae3a7494dfe83347f02ef1a` / `1k64katug`) and force-opens chat (hours/offline gate skipped; panel maximized). Hosting/production still uses Julie’s LAS defaults. Set `ATRIUM_DEV_FORCE_CHAT_OPEN=0` only if you need to dogfood the out-of-hours panel locally.
 
 | Goal | Command |
 |------|---------|
