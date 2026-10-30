@@ -51,11 +51,12 @@ export function quickViewHtml(opts: {
   const appCss = readFileSync(join(componentsDir, 'app', 'app.css'), 'utf8');
   const clientJs = readOrderedJs(JS_ORDER);
 
-  // Local dogfood only: ATRIUM_DEV_FORCE_CHAT_OPEN=1 with ATRIUM_DEV_MODE skips hours/offline gate.
+  // Local atrium dogfood: always skip hours/offline gate (test widget + bubble).
+  // ATRIUM_DEV_FORCE_CHAT_OPEN=0 can opt out; unset / any other value keeps force on.
   const forceChatOpen =
     process.env.ATRIUM_DEV_MODE === '1' &&
     process.env.NODE_ENV === 'development' &&
-    process.env.ATRIUM_DEV_FORCE_CHAT_OPEN === '1';
+    process.env.ATRIUM_DEV_FORCE_CHAT_OPEN !== '0';
 
   const bootstrap =
     `const CONNECTION_REFERENCE = ${JSON.stringify(opts.connectionReference)};\n` +

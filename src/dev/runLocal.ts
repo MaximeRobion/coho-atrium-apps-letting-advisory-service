@@ -38,6 +38,6 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`[atrium-lettings-advice] dataDir=${dataDir} seed=${JSON.stringify(seed)}`);
   console.log(`[atrium-lettings-advice] open: ${uiUrl}`);
   console.log(
-    '[atrium-lettings-advice] Chat + document library use code defaults for Tawk property/widget/KB; override TAWK_* env only if needed.',
+    '[atrium-lettings-advice] Local/dev chat uses the COHO test Tawk Inline widget (FORCE_CHAT_OPEN on). Hosting still uses Julie LAS defaults.',
   );
 });

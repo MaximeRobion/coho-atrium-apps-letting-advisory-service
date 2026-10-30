@@ -118,9 +118,13 @@
     if (tawkLoaded) return;
     tawkLoaded = true;
 
+    var forceOpen = typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN;
+
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
-    window.Tawk_API.autoStart = false;
+    // Local dogfood: let Tawk auto-start so the Inline bubble appears without
+    // racing start()/showWidget against an offline status.
+    window.Tawk_API.autoStart = forceOpen ? true : false;
 
     window.Tawk_API.onStatusChange = function (status) {
       applyTawkOfflineSafetyNet(status);
@@ -136,14 +140,13 @@
         status = null;
       }
 
-      var forceOpen = typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN;
       if (status === 'offline' && !forceOpen) {
         applyTawkOfflineSafetyNet('offline');
         return;
       }
 
       try {
-        if (typeof window.Tawk_API.start === 'function') {
+        if (!forceOpen && typeof window.Tawk_API.start === 'function') {
           window.Tawk_API.start();
         }
       } catch (err) {
@@ -156,6 +159,17 @@
         }
       } catch (err) {
         /* ignore */
+      }
+
+      // Local dogfood: open the panel so chat is obvious (bubble alone is easy to miss).
+      if (forceOpen) {
+        try {
+          if (typeof window.Tawk_API.maximize === 'function') {
+            window.Tawk_API.maximize();
+          }
+        } catch (err) {
+          /* ignore */
+        }
       }
     };
 
