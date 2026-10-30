@@ -37,8 +37,8 @@ Copy [`.env.example`](./.env.example). **Never commit `.env` or real secrets.**
 | `ATRIUM_SETUP_SECRET` | Bootstrap secret for `lifecycle.setup` (Hosting injects) |
 | `ATRIUM_DATA_DIR` | SQLite directory (`./data` local, `/data` Hosting) |
 | `ATRIUM_FRAME_ANCESTORS` / `ATRIUM_PARENT_ORIGIN` | Hosting injects for iframe CSP / postMessage |
-| `TAWK_PROPERTY_ID` | **Required** for chat. Hosting: Julie LAS id via runtime secrets. Local: see `.env.example` |
-| `TAWK_WIDGET_ID` | **Required** for chat. Hosting: Julie LAS Inline widget via runtime secrets. Local: see `.env.example` |
+| `TAWK_PROPERTY_ID` | **Required** for chat. Hosting: set via runtime secrets. Local: set in `.env` (see `.env.example`) |
+| `TAWK_WIDGET_ID` | **Required** for chat. Hosting: set via runtime secrets. Local: set in `.env` (see `.env.example`) |
 | `TAWK_KNOWLEDGE_BASE_URL` | Unused by the UI (KB iframe removed). Optional on `/api/tawk/config` |
 | `TAWK_API_KEY` | Unused (Secure Mode out). Leave empty; never commit a real key |
 
@@ -54,8 +54,8 @@ There are **no baked-in Tawk IDs** in application code. Chat is unconfigured unt
 
 | Variable | Notes |
 |----------|--------|
-| `TAWK_PROPERTY_ID` | **Required.** Labs/Prod: Julie `687cb5a73606072bf84a6030`. |
-| `TAWK_WIDGET_ID` | **Required.** Labs/Prod: Julie Inline `1j0jib5sb`. |
+| `TAWK_PROPERTY_ID` | **Required.** Set the live Inline property id via Hosting runtime secrets (never commit the value). |
+| `TAWK_WIDGET_ID` | **Required.** Set the live Inline widget id via Hosting runtime secrets (never commit the value). |
 | `TAWK_API_KEY` | **Unused** (Secure Mode out). Leave unset; do not enable Secure Mode on this shared property. |
 
 Do **not** put secrets in Store light/native config, catalogue copy, or the image.
@@ -72,14 +72,14 @@ Do **not** put secrets in Store light/native config, catalogue copy, or the imag
 
 1. Register the Hosted app on Labs Store (GitHub + Dockerfile) and wait until provision state is **Ready**.
 2. Browser host is `{slug}.labs.coho.software` (this app: `letting-advi-ce2992b1.labs.coho.software`).
-3. In **Hosting runtime secrets**, set Julie’s IDs (`TAWK_PROPERTY_ID=687cb5a73606072bf84a6030`, `TAWK_WIDGET_ID=1j0jib5sb`) and save (re-provisions automatically).
+3. In **Hosting runtime secrets**, set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` from the Tawk dashboard (live Inline widget) and save (re-provisions automatically). Do not put those values in the repo.
 4. **Do not** enable Tawk Secure Mode for dogfood.
 5. After a Hosted Update, confirm the runtime-secrets map still has those keys (hand-edited ECS env is gone).
 
 ### Prod (same checklist before go-live)
 
 1. Confirm Hosted app is Ready on the production Hosting cluster.
-2. Set Julie’s public widget IDs via runtime secrets (required).
+2. Set the live Inline widget IDs via runtime secrets (required).
 3. Do **not** enable Secure Mode on the shared property.
 
 ## Local UI
