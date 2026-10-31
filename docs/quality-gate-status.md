@@ -39,12 +39,12 @@ Remote: `CompanyForLife/atrium-lettings-advice` (`main`).
 | Tawk chat embed | **Pass (code)** | Property/widget code defaults |
 | Secure Mode hash | **Out** | Shared property; no `Tawk_API.login` |
 | Document library | **Pass (code)** | Tawk KB `lettingadviceservice.tawk.help` |
-| Billing UI | **Out of scope** | Entitlement = Store install (free) |
+| Billing UI | **Out of scope** | Entitlement = Store monthly install (GBP 70 flat; COHO 20% share). No in-app billing UI. |
 
 ## Hosting — remaining steps
 
 1. Register **Hosted** app on Labs pointing at this GitHub repo + Dockerfile (`atrium-apps/lettings-advice`).
 2. Set public `TAWK_*` IDs via Hosting runtime secrets; do **not** enable Secure Mode.
 3. Set `browserBaseUrl` to the public Hosting URL; keep runtime BaseUrl private.
-4. List as **free** seed; smoke health, home, document library, chat, disconnect.
+4. List as **paid flat GBP 70** (`store/pricing.md`); smoke health, home, document library, chat, disconnect.
 5. After internal gate sign-off, short-cut draft → listed for Labs dogfood.

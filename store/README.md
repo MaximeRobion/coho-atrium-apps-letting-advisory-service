@@ -7,8 +7,9 @@ Catalogue copy and images for the COHO Store, kept in git so whoever uploads the
 | File | Status |
 |---|---|
 | `listing.md` | Lettings Advice Service Store copy (from `assets/app-details.json`). |
+| `pricing.md` | Flat monthly **GBP 70** net; COHO platform share **20%**; how to set via `update-listing`. |
 | `icon-brief.md` | Notes how `icon.png` was produced from Julie’s site favicon. |
 | `icon.png` | 1024×1024 opaque RGB from https://lettingsadviceservice.co.uk (link rel=icon / og:image). Checked with `node design/check-icon.cjs store/icon.png`. |
 | `screenshot.png` | **Not shipped yet.** Needs a signed `/ui` launch URL when ready. |
 
-Runtime manifest stays at `assets/manifest.json` / root `manifest.example.json` (Hosting / connect). Do not put listing copy there.
+Runtime manifest stays at `assets/manifest.json` / root `manifest.example.json` (Hosting / connect). Do not put listing copy or price there — price is a Store listing field (`priceType` + `price`), not a manifest key.

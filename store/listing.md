@@ -12,7 +12,7 @@ Browse Julie’s lettings advice documents and chat with the advice team without
 
 # Full description
 
-A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat and a Documents catalogue (guides, free templates, and videos scraped from Julie’s library) for connected organisations. Store install is the entitlement (listed free until commercial terms and Store billing). Secure Mode visitor login is not used — the Tawk property is shared with another team.
+A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat and a Documents catalogue (guides, free templates, and videos scraped from Julie’s library) for connected organisations. Entitlement is a Store install billed as a flat monthly catalogue price (see `store/pricing.md`). Secure Mode visitor login is not used — the Tawk property is shared with another team.
 
 # Category
 
@@ -20,7 +20,7 @@ Lettings
 
 # What's new
 
-Documents catalogue with guides, free templates, and Julie’s library videos; Tawk chat with out-of-hours panel matching her livechat schedule.
+Documents catalogue with guides, free templates, and Julie’s library videos; Tawk chat with out-of-hours panel matching her livechat schedule. Store billing: flat monthly listing (GBP 70 net) via Atrium monthly billing — no one-off fee.
 
 # What it can do
 
@@ -31,7 +31,7 @@ Documents catalogue with guides, free templates, and Julie’s library videos; T
 
 # Pre-requisites
 
-Connect from the COHO Store. No Public API capability grants are required for the current chat + document library scope. Set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.
+Connect from the COHO Store (card required for a paid install). No Public API capability grants are required for the current chat + document library scope. Set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.
 
 # Background tasks
 
