@@ -145,9 +145,11 @@
 
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
-    // Local dogfood: let Tawk auto-start so the Inline bubble appears without
-    // racing start()/showWidget against an offline status.
-    window.Tawk_API.autoStart = forceOpen ? true : false;
+    // Inline widgets (Julie + COHO test) only paint the floating bubble when
+    // autoStart is true. start()/showWidget alone leave 0x0 iframes — Labs was
+    // "configured + online" with no visible bubble. Hours gate still skips load
+    // when closed; offline safety-net hides if Tawk reports offline after load.
+    window.Tawk_API.autoStart = true;
 
     window.Tawk_API.onStatusChange = function (status) {
       if (typeof lasDebugLog === 'function') {
@@ -178,20 +180,6 @@
       if (status === 'offline' && !forceOpen) {
         applyTawkOfflineSafetyNet('offline');
         return;
-      }
-
-      try {
-        if (!forceOpen && typeof window.Tawk_API.start === 'function') {
-          if (typeof lasDebugLog === 'function') lasDebugLog('Tawk_API.start()');
-          if (typeof lasDebugStripLine === 'function') {
-            lasDebugStripLine('Tawk_API.start()');
-          }
-          window.Tawk_API.start();
-        }
-      } catch (err) {
-        if (typeof lasDebugLog === 'function') {
-          lasDebugLog('Tawk_API.start() failed', err && err.message ? err.message : err);
-        }
       }
 
       try {

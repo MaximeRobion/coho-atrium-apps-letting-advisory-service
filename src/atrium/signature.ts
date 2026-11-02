@@ -10,16 +10,21 @@ export interface SignatureRequest {
   connectionReference: string;
 }
 
+/**
+ * Query keys ignored when verifying browser-launch signatures.
+ * - atriumSignature: host places it on the launch URL
+ * - lasDebug: allow appending ?lasDebug=1 on Labs without re-signing
+ */
+const UNSIGNED_LAUNCH_QUERY_KEYS = new Set(['atriumsignature', 'lasdebug']);
+
 export function pathAndQueryForSignature(url: URL): string {
   const query = url.search.startsWith('?') ? url.search.slice(1) : '';
-  const filtered = query
-    .split('&')
-    .filter(
-      (part) =>
-        part &&
-        part !== 'atriumSignature' &&
-        !part.toLowerCase().startsWith('atriumsignature='),
-    );
+  const filtered = query.split('&').filter((part) => {
+    if (!part) return false;
+    const eq = part.indexOf('=');
+    const key = (eq >= 0 ? part.slice(0, eq) : part).toLowerCase();
+    return !UNSIGNED_LAUNCH_QUERY_KEYS.has(key);
+  });
   return filtered.length ? `${url.pathname}?${filtered.join('&')}` : url.pathname;
 }
 

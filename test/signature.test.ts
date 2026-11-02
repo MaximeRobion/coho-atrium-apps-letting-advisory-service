@@ -6,6 +6,7 @@ import {
   VECTOR_SECRET,
   VECTOR_TIMESTAMP,
   createSignatureHeader,
+  pathAndQueryForSignature,
   verifyAtriumSignature,
 } from '../src/atrium/signature.js';
 
@@ -90,5 +91,18 @@ test('createSignatureHeader round-trips with verifier', () => {
       connectionReference: VECTOR_CONNECTION,
     }),
     true,
+  );
+});
+
+test('pathAndQueryForSignature strips atriumSignature and lasDebug only', () => {
+  const base =
+    'https://app.example/ui?connectionReference=abc&theme=light&atriumSignature=t%3D1%2Cv1%3Dx&lasDebug=1';
+  assert.equal(
+    pathAndQueryForSignature(new URL(base)),
+    '/ui?connectionReference=abc&theme=light',
+  );
+  assert.equal(
+    pathAndQueryForSignature(new URL('https://app.example/ui?lasDebug=1')),
+    '/ui',
   );
 });
