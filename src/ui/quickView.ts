@@ -1,7 +1,9 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isAtriumDevMode } from '../dev/devMode.js';
 import { DOCUMENT_CATALOGUE } from '../documents/catalogue.js';
+import { describeTawkEnvPresence } from '../tawk/diagnostics.js';
 import { parentOrigin } from './csp.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -26,6 +28,7 @@ function readCohoCss(): string {
 const JS_ORDER = [
   'shared/app-boot.js',
   'shared/chat-hours.js',
+  'shared/las-debug.js',
   'shared/documents-helpers.js',
   'app/las-documents.js',
   'app/las-app.js',
@@ -53,17 +56,19 @@ export function quickViewHtml(opts: {
 
   // Local atrium dogfood: always skip hours/offline gate (test widget + bubble).
   // ATRIUM_DEV_FORCE_CHAT_OPEN=0 can opt out; unset / any other value keeps force on.
+  const atriumDevMode = isAtriumDevMode();
   const forceChatOpen =
-    process.env.ATRIUM_DEV_MODE === '1' &&
-    process.env.NODE_ENV === 'development' &&
-    process.env.ATRIUM_DEV_FORCE_CHAT_OPEN !== '0';
+    atriumDevMode && process.env.ATRIUM_DEV_FORCE_CHAT_OPEN !== '0';
+  const tawkEnvPresence = describeTawkEnvPresence();
 
   const bootstrap =
     `const CONNECTION_REFERENCE = ${JSON.stringify(opts.connectionReference)};\n` +
     `const USAGE_TOKEN = ${JSON.stringify(opts.usageToken)};\n` +
     `const PARENT_ORIGIN = ${JSON.stringify(parentOrigin())};\n` +
     `const DOCUMENT_CATALOGUE = ${JSON.stringify(DOCUMENT_CATALOGUE)};\n` +
-    `const FORCE_CHAT_OPEN = ${forceChatOpen ? 'true' : 'false'};\n`;
+    `const FORCE_CHAT_OPEN = ${forceChatOpen ? 'true' : 'false'};\n` +
+    `const ATRIUM_DEV_MODE = ${atriumDevMode ? 'true' : 'false'};\n` +
+    `const LAS_TAWK_ENV = ${JSON.stringify(tawkEnvPresence)};\n`;
 
   if (!clientJs.includes(BOOTSTRAP_MARKER)) {
     throw new Error('las-app.js missing bootstrap marker');

@@ -31,6 +31,10 @@
   var chatLoading = false;
   var lastHoursStatus = null;
 
+  if (typeof lasDebugBootSnapshot === 'function') {
+    lasDebugBootSnapshot();
+  }
+
   var documentsEnabled =
     window.LasDocuments && typeof window.LasDocuments.hasDocuments === 'function'
       ? window.LasDocuments.hasDocuments()
@@ -89,10 +93,24 @@
   }
 
   function applyTawkOfflineSafetyNet(status) {
-    if (typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN) return;
+    if (typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN) {
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('offline safety-net skipped (FORCE_CHAT_OPEN)', status);
+      }
+      return;
+    }
     if (status !== 'offline') return;
     tawkForcedOffline = true;
     var hours = getChatHoursStatus();
+    if (typeof lasDebugLog === 'function') {
+      lasDebugLog('offline safety-net engaged', {
+        status: status,
+        hoursIsOpen: hours.isOpen,
+      });
+    }
+    if (typeof lasDebugStripLine === 'function') {
+      lasDebugStripLine('tawk status=offline → conceal widget');
+    }
     showOutOfHours({
       isOpen: false,
       statusText: "We're offline",
@@ -112,6 +130,18 @@
     tawkLoaded = true;
 
     var forceOpen = typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN;
+    var embedHost = '';
+    try {
+      embedHost = new URL(embedUrl).host;
+    } catch (err) {
+      embedHost = '(invalid embedUrl)';
+    }
+    if (typeof lasDebugLog === 'function') {
+      lasDebugLog('script load start', { host: embedHost, forceOpen: forceOpen });
+    }
+    if (typeof lasDebugStripLine === 'function') {
+      lasDebugStripLine('script load → ' + embedHost + ' (forceOpen=' + forceOpen + ')');
+    }
 
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
@@ -120,6 +150,12 @@
     window.Tawk_API.autoStart = forceOpen ? true : false;
 
     window.Tawk_API.onStatusChange = function (status) {
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('onStatusChange', status);
+      }
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine('tawk onStatusChange=' + status);
+      }
       applyTawkOfflineSafetyNet(status);
     };
 
@@ -132,6 +168,12 @@
       } catch (err) {
         status = null;
       }
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('onLoad', { status: status, autoStart: window.Tawk_API.autoStart });
+      }
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine('tawk onLoad status=' + status);
+      }
 
       if (status === 'offline' && !forceOpen) {
         applyTawkOfflineSafetyNet('offline');
@@ -140,28 +182,43 @@
 
       try {
         if (!forceOpen && typeof window.Tawk_API.start === 'function') {
+          if (typeof lasDebugLog === 'function') lasDebugLog('Tawk_API.start()');
+          if (typeof lasDebugStripLine === 'function') {
+            lasDebugStripLine('Tawk_API.start()');
+          }
           window.Tawk_API.start();
         }
       } catch (err) {
-        /* ignore */
+        if (typeof lasDebugLog === 'function') {
+          lasDebugLog('Tawk_API.start() failed', err && err.message ? err.message : err);
+        }
       }
 
       try {
         if (typeof window.Tawk_API.showWidget === 'function') {
+          if (typeof lasDebugLog === 'function') lasDebugLog('Tawk_API.showWidget()');
           window.Tawk_API.showWidget();
         }
       } catch (err) {
-        /* ignore */
+        if (typeof lasDebugLog === 'function') {
+          lasDebugLog('Tawk_API.showWidget() failed', err && err.message ? err.message : err);
+        }
       }
 
       // Local dogfood: open the panel so chat is obvious (bubble alone is easy to miss).
       if (forceOpen) {
         try {
           if (typeof window.Tawk_API.maximize === 'function') {
+            if (typeof lasDebugLog === 'function') lasDebugLog('Tawk_API.maximize()');
+            if (typeof lasDebugStripLine === 'function') {
+              lasDebugStripLine('Tawk_API.maximize()');
+            }
             window.Tawk_API.maximize();
           }
         } catch (err) {
-          /* ignore */
+          if (typeof lasDebugLog === 'function') {
+            lasDebugLog('Tawk_API.maximize() failed', err && err.message ? err.message : err);
+          }
         }
       }
     };
@@ -171,6 +228,19 @@
     script.src = embedUrl;
     script.charset = 'UTF-8';
     script.setAttribute('crossorigin', '*');
+    script.onload = function () {
+      if (typeof lasDebugLog === 'function') lasDebugLog('embed script onload');
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine('embed script onload');
+      }
+    };
+    script.onerror = function () {
+      if (typeof lasDebugLog === 'function') lasDebugLog('embed script onerror', embedHost);
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine('embed script onerror → ' + embedHost);
+      }
+      setChatError('Chat script failed to load.');
+    };
     document.body.appendChild(script);
   }
 
@@ -182,6 +252,24 @@
     try {
       var hours = getChatHoursStatus();
       lastHoursStatus = hours;
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('hours gate', {
+          isOpen: hours.isOpen,
+          statusText: hours.statusText,
+          nextChangeText: hours.nextChangeText,
+          tawkForcedOffline: tawkForcedOffline,
+          forceChatOpen: typeof FORCE_CHAT_OPEN !== 'undefined' && FORCE_CHAT_OPEN,
+        });
+      }
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine(
+          'hours gate isOpen=' +
+            hours.isOpen +
+            ' forcedOffline=' +
+            tawkForcedOffline +
+            (hours.nextChangeText ? ' next=' + hours.nextChangeText : ''),
+        );
+      }
 
       if (!hours.isOpen || tawkForcedOffline) {
         showOutOfHours(
@@ -212,6 +300,26 @@
       }
 
       var config = await apiGet('/api/tawk/config');
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('/api/tawk/config', {
+          httpOk: config.ok,
+          status: config.status,
+          bodyOk: config.body && config.body.ok,
+          configured: config.body && config.body.configured,
+          hasEmbedUrl: Boolean(config.body && config.body.embedUrl),
+          env: config.body && config.body.env,
+        });
+      }
+      if (typeof lasDebugStripLine === 'function') {
+        lasDebugStripLine(
+          'config http=' +
+            config.status +
+            ' configured=' +
+            (config.body && config.body.configured) +
+            ' env=' +
+            JSON.stringify((config.body && config.body.env) || null),
+        );
+      }
       if (!config.ok || !config.body || !config.body.ok || !config.body.embedUrl) {
         setChatError(
           (config.body && config.body.message) ||
@@ -223,12 +331,18 @@
       hours = getChatHoursStatus();
       lastHoursStatus = hours;
       if (!hours.isOpen) {
+        if (typeof lasDebugStripLine === 'function') {
+          lasDebugStripLine('hours re-check closed after config → skip load');
+        }
         showOutOfHours(hours);
         return;
       }
 
       loadTawkWidget(config.body.embedUrl);
     } catch (err) {
+      if (typeof lasDebugLog === 'function') {
+        lasDebugLog('ensureChat error', err && err.message ? err.message : err);
+      }
       setChatError(err && err.message ? err.message : 'Failed to open chat');
     } finally {
       chatLoading = false;

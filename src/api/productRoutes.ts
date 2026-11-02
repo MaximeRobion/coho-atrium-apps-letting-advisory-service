@@ -3,6 +3,7 @@ import { URL } from 'node:url';
 import { requireProductAuth } from '../http/auth.js';
 import { sendJson } from '../http/respond.js';
 import { readTawkConfig } from '../tawk/config.js';
+import { describeTawkEnvPresence, formatTawkEnvPresenceLog } from '../tawk/diagnostics.js';
 
 /**
  * Product API (usage-token gated).
@@ -23,6 +24,9 @@ export async function handleProductApi(
     const auth = await requireProductAuth(req, res, url);
     if (!auth) return true;
     const tawk = readTawkConfig();
+    const env = describeTawkEnvPresence();
+    // Masked presence only — never log property/widget/API values.
+    console.info(`[atrium-lettings-advice] GET /api/tawk/config ${formatTawkEnvPresenceLog(env)}`);
     sendJson(res, 200, {
       ok: true,
       propertyId: tawk.propertyId || null,
@@ -30,6 +34,7 @@ export async function handleProductApi(
       embedUrl: tawk.embedUrl,
       knowledgeBaseUrl: tawk.knowledgeBaseUrl || null,
       configured: Boolean(tawk.embedUrl),
+      env,
     });
     return true;
   }
