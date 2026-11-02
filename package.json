@@ -16,10 +16,14 @@
     "seed": "node --import tsx src/dev/seedLocal.ts",
     "test": "node --import tsx --test test/**/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check:design": "node design/check.cjs src/ui/quickView.html"
+    "check:design": "node design/check.cjs src/ui/quickView.html",
+    "check:icon": "node design/check-icon.cjs store/icon.png",
+    "make:icon": "node design/make-icon.cjs --out store/icon.png",
+    "screenshot": "node design/capture-screenshot.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
+    "playwright": "^1.64.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   }

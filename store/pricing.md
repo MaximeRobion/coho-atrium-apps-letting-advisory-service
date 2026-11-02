@@ -29,12 +29,12 @@ Store card shows the catalogue price.
 Org path: `POST /api/organisation/{organisationReference}/atrium-store/apps/{appReference}/update-listing`  
 Partner path: `POST .../atrium/developer/apps/{appReference}/update-listing`
 
-3. Complete publisher disclosures, submit for approval, Super Admin approve.
-   Approve creates the Flat catalogue product at GBP 70 + VAT.
+3. COHO seeds land **Listed + Public** via
+   `scripts/register-atrium-seed-store-packs-labs.sh` (no SA approve click).
+   Still set Paid / 70 with update-listing after the row exists — the seed
+   script does not invent price. Confirm the Store card shows **Paid — 70**.
 
-Build an app may show Paid / 70 in the form, but the register API currently
-ignores those fields — always confirm SA review shows **Paid — 70** before
-approve. Edit listing UI may still omit price controls; the API body above is
-the supported path until FE catches up.
+Build an app / register may still create the row as Free. Edit listing UI may
+omit price controls; the API body above is the supported path until FE catches up.
 
 Full HouseShare readiness notes: Project doc `docs/las-monthly-billing.md`.
