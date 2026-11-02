@@ -16,6 +16,7 @@ import { existsSync } from 'node:fs';
 import { openDatabase } from '../db/database.js';
 import { createServer } from '../server.js';
 import { readTawkConfig } from '../tawk/config.js';
+import { formatTawkEnvPresenceLog } from '../tawk/diagnostics.js';
 import { isAtriumDevMode, LOCAL_DEV_CONNECTION, localDevUsageToken } from './devMode.js';
 import { seedLocalDevData } from './seedLocal.js';
 
@@ -69,5 +70,9 @@ server.listen(port, '127.0.0.1', () => {
   console.log(`[atrium-lettings-advice] open: ${uiUrl}`);
   console.log(
     `[atrium-lettings-advice] Tawk embed from env: ${tawk.embedUrl} (FORCE_CHAT_OPEN on unless ATRIUM_DEV_FORCE_CHAT_OPEN=0).`,
+  );
+  console.log(`[atrium-lettings-advice] Tawk env: ${formatTawkEnvPresenceLog()}`);
+  console.log(
+    `[atrium-lettings-advice] Chat diagnostics: on-page strip + console when ATRIUM_DEV_MODE, or append ?lasDebug=1`,
   );
 });

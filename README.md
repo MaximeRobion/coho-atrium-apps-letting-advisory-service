@@ -94,6 +94,8 @@ Prints a localhost `/ui` URL (unsigned; requires `NODE_ENV=development` + `ATRIU
 
 `npm run dev` loads `.env` then `.env.example` (existing keys win). The example file ships the COHO **test** Inline widget for dogfood. Force-open is on by default in atrium local/dev (`ATRIUM_DEV_FORCE_CHAT_OPEN=0` to dogfood the out-of-hours panel).
 
+**Chat diagnostics:** with `ATRIUM_DEV_MODE` (local `npm run dev`) or `?lasDebug=1` on `/ui`, the page shows an on-page strip and console logs for masked `TAWK_*` presence, hours gate, Tawk status, and script load/start/maximize. No secrets are logged. On Labs, after a Hosted Update that wiped temporary ECS `TAWK_*`, append `?lasDebug=1` to confirm env presence — then re-inject `TAWK_*` until Hosting stack redeploy makes runtime secrets durable.
+
 | Goal | Command |
 |------|---------|
 | Start (seed connection on boot) | `npm run dev` |

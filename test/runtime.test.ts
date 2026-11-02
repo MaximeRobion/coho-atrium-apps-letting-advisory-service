@@ -232,6 +232,11 @@ test('tawk config returns embed + knowledge base; never exposes api key', async 
     assert.equal(body.configured, true);
     assert.equal(body.apiKey, undefined);
     assert.equal(body.secureModeEnabled, undefined);
+    const env = body.env as Record<string, unknown>;
+    assert.equal(env.TAWK_PROPERTY_ID, 'set:len=24:…6030');
+    assert.equal(env.TAWK_WIDGET_ID, 'set:len=9:…b5sb');
+    assert.equal(env.TAWK_API_KEY, 'set');
+    assert.equal(env.configured, true);
     const raw = JSON.stringify(body);
     assert.doesNotMatch(raw, /unit-test-api-key/);
   });
@@ -259,6 +264,11 @@ test('tawk config reports unconfigured when TAWK_* env unset', async () => {
     assert.equal(body.configured, false);
     assert.equal(body.propertyId, null);
     assert.equal(body.widgetId, null);
+    const env = body.env as Record<string, unknown>;
+    assert.equal(env.TAWK_PROPERTY_ID, 'unset');
+    assert.equal(env.TAWK_WIDGET_ID, 'unset');
+    assert.equal(env.TAWK_API_KEY, 'unset');
+    assert.equal(env.configured, false);
   });
 });
 
@@ -322,6 +332,10 @@ test('signed /ui returns HTML with documents + chat and Tawk-friendly CSP', asyn
     assert.doesNotMatch(html, /Tawk_API\.embedded\s*=/);
     assert.match(html, /Tawk_API\.autoStart\s*=\s*forceOpen\s*\?\s*true\s*:\s*false/);
     assert.match(html, /FORCE_CHAT_OPEN = false/);
+    assert.match(html, /ATRIUM_DEV_MODE = false/);
+    assert.match(html, /LAS_TAWK_ENV = /);
+    assert.match(html, /isLasDebugEnabled/);
+    assert.match(html, /lasDebugBootSnapshot/);
     assert.match(html, /Tawk_API\.showWidget/);
     assert.match(html, /Tawk_API\.maximize/);
     assert.doesNotMatch(html, /dockTawkWidgets/);
