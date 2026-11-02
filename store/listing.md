@@ -36,3 +36,11 @@ Connect from the COHO Store (card required for a paid install). No Public API ca
 # Background tasks
 
 None in P0. No product schedules or domain event webhooks. Entitlement is the Store connection only; there is no in-app billing UI.
+
+# Data location
+
+AWS London
+
+# Permission reasons
+
+None — `requestedCapabilities` is empty. Chat and Documents do not call the Public API in this release.

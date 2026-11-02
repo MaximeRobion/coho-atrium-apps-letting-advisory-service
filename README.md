@@ -138,9 +138,11 @@ docker build --platform linux/amd64 -t atrium-apps/lettings-advice .
 
 Hosting injects `ATRIUM_*` / `PORT` only. Do not bake secrets into the image.
 
-## Design
+## Design / Store listing pack
 
-`design/` is the COHO Atrium design kit (from HouseShare `samples/atrium/hello-node/design/`). See [`AGENTS.md`](./AGENTS.md). Store catalogue copy lives under [`assets/`](./assets/).
+`design/` is the COHO Atrium design kit (from HouseShare `samples/atrium/hello-node/design/`). See [`AGENTS.md`](./AGENTS.md).
+
+COHO seed catalogue handoff lives under [`store/`](./store/) (`listing.md`, `icon.png`, `screenshot.png`, `seed.json`) — see HouseShare `docs/feature-plans/atrium-store-listing-pack.md` and [`docs/quality-gate-status.md`](./docs/quality-gate-status.md). Legacy [`assets/`](./assets/) mirrors copy only; do not treat it as the seed pack.
 
 ## Remotes / Labs
 
