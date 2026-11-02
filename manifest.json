@@ -1,0 +1,47 @@
+{
+  "manifestVersion": 1,
+  "health": {
+    "path": "/health",
+    "method": "GET"
+  },
+  "config": {
+    "mode": "native",
+    "browserBaseUrl": "https://letting-advi-ce2992b1.labs.coho.software",
+    "externalConfigureUrl": null,
+    "schemaPath": "/config/schema",
+    "getPath": "/config",
+    "putPath": "/config",
+    "quickViewPath": "/ui",
+    "openPresentation": "modal"
+  },
+  "triggers": {
+    "lifecycle": {
+      "setupPath": "/webhooks/atrium/setup",
+      "disconnectPath": "/webhooks/atrium/disconnect"
+    },
+    "schedules": [],
+    "events": []
+  },
+  "requestedCapabilities": [],
+  "operations": [],
+  "runtimeEnv": [
+    {
+      "name": "TAWK_PROPERTY_ID",
+      "secret": false,
+      "description": "Tawk property id (Hosting: Julie LAS 687cb5a73606072bf84a6030). No code default.",
+      "required": true
+    },
+    {
+      "name": "TAWK_WIDGET_ID",
+      "secret": false,
+      "description": "Tawk Inline widget id (Hosting: Julie LAS 1j0jib5sb). No code default.",
+      "required": true
+    },
+    {
+      "name": "TAWK_API_KEY",
+      "secret": true,
+      "description": "Unused while Secure Mode is out. Do not enable Secure Mode on the shared property.",
+      "required": false
+    }
+  ]
+}
