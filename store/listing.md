@@ -22,15 +22,15 @@ Lettings
 
 # What's new
 
-Store pack refreshed with the LAS house/headset logo and a Documents quick-view screenshot (guides, templates, videos). Product: Julie's catalogue plus in-hours Tawk chat with an out-of-hours notice. Billing stays flat monthly GBP 70 via Atrium Store monthly billing.
+Opens as a COHO side panel. Julie's guides, free templates, and help videos plus in-hours chat with an out-of-hours notice. Flat monthly GBP 70 Store billing.
 
 # What it can do
 
-- Open a signed quick view from the COHO Store
-- Browse Julie's guides, free templates, and video tutorials without leaving COHO
-- Download free templates from the Documents catalogue
-- Chat with the Lettings Advice Service team when they are online (out-of-hours notice when closed)
-- Disconnect clears this app's connection secrets from SQLite
+- Open as a side panel in COHO so you can keep working while you get advice
+- Chat with Julie Ford's Lettings Advice Service team when they are online
+- Browse Julie's library of guides, free templates, and help videos
+- Download free templates for day-to-day lettings work
+- See when the team is next available if chat is closed
 
 # Pre-requisites
 
