@@ -1,10 +1,10 @@
 # Full name
 
-Lettings Advice Service
+Letting Advisory Service
 
 # Short name
 
-Lettings Advice
+LAS
 
 # Intro description
 
@@ -22,7 +22,7 @@ Lettings
 
 # What's new
 
-Opens as a COHO side panel. Julie's guides, free templates, and help videos plus in-hours chat with an out-of-hours notice. Flat monthly GBP 70 Store billing.
+
 
 # What it can do
 
