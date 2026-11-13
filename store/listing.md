@@ -8,7 +8,7 @@ Lettings Advice
 
 # Intro description
 
-Julie's Lettings Advice Service inside COHO: browse guides, free templates, and videos, then chat with the advice team when they are online.
+Get straight answers from TV property expert Julie Ford and her team: guides, free templates, videos, and live chat in COHO.
 
 # Full description
 
