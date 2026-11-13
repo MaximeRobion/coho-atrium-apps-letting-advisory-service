@@ -8,13 +8,13 @@ Lettings Advice
 
 # Intro description
 
-Julie's Lettings Advice Service inside COHO: browse guides, free templates, and videos, then chat with the advice team when they are online.
+Expert advice for lettings professionals
 
 # Full description
 
-Bring Julie's Lettings Advice Service into COHO for your organisation. Managers open a signed Store quick view and get the Documents library (guides, downloadable free templates, and video tutorials from Julie's catalogue) plus live chat with the advice team via Tawk.to when they are in hours.
+Get straight answers from TV property expert Julie Ford and her team.
 
-Entitlement is a Store install billed as a flat monthly catalogue price (GBP 70 net; see `store/pricing.md`). There is no one-off fee and no in-app billing UI. Secure Mode visitor login is not used; the Tawk property is shared with another team. Chat needs `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets.
+Open Lettings Advice Service in COHO to browse Julie's library of guides, free templates, and help videos, and to chat with her team when they are online. When chat is closed, the app shows when they are next available.
 
 # Category
 
@@ -22,15 +22,15 @@ Lettings
 
 # What's new
 
-Store pack refreshed with the LAS house/headset logo and a Documents quick-view screenshot (guides, templates, videos). Product: Julie's catalogue plus in-hours Tawk chat with an out-of-hours notice. Billing stays flat monthly GBP 70 via Atrium Store monthly billing.
+Opens as a COHO side panel. Julie's guides, free templates, and help videos plus in-hours chat with an out-of-hours notice. Flat monthly GBP 70 Store billing.
 
 # What it can do
 
-- Open a signed quick view from the COHO Store
-- Browse Julie's guides, free templates, and video tutorials without leaving COHO
-- Download free templates from the Documents catalogue
-- Chat with the Lettings Advice Service team when they are online (out-of-hours notice when closed)
-- Disconnect clears this app's connection secrets from SQLite
+- Open as a side panel in COHO so you can keep working while you get advice
+- Chat with Julie Ford's Lettings Advice Service team when they are online
+- Browse Julie's library of guides, free templates, and help videos
+- Download free templates for day-to-day lettings work
+- See when the team is next available if chat is closed
 
 # Pre-requisites
 

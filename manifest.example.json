@@ -33,7 +33,7 @@
     "getPath": "/config",
     "putPath": "/config",
     "quickViewPath": "/ui",
-    "openPresentation": "modal"
+    "openPresentation": "side"
   },
   "triggers": {
     "lifecycle": {
