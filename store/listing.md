@@ -8,13 +8,13 @@ Lettings Advice
 
 # Intro description
 
-Get straight answers from TV property expert Julie Ford and her team: guides, free templates, videos, and live chat in COHO.
+Expert advice for lettings professionals
 
 # Full description
 
-Bring Julie's Lettings Advice Service into COHO for your organisation. Managers open a signed Store quick view and get the Documents library (guides, downloadable free templates, and video tutorials from Julie's catalogue) plus live chat with the advice team via Tawk.to when they are in hours.
+Get straight answers from TV property expert Julie Ford and her team.
 
-Entitlement is a Store install billed as a flat monthly catalogue price (GBP 70 net; see `store/pricing.md`). There is no one-off fee and no in-app billing UI. Secure Mode visitor login is not used; the Tawk property is shared with another team. Chat needs `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets.
+Open Lettings Advice Service in COHO to browse Julie's library of guides, free templates, and help videos, and to chat with her team when they are online. When chat is closed, the app shows when they are next available.
 
 # Category
 
