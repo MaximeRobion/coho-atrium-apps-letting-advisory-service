@@ -10,15 +10,15 @@ Quality gate: [atrium-quality-gate-checklist.md](https://github.com/CompanyForLi
 
 | File | Status |
 |---|---|
-| `listing.md` | Every §20.3 field (including Data location + Permission reasons). |
+| `listing.md` | Every §20.3 field (including Data location + Permission reasons). Julie-facing copy: guides, templates, videos + chat. |
 | `pricing.md` | Flat monthly **GBP 70** net; COHO platform share **20%**; how to set via `update-listing`. |
 | `seed.json` | Stable `appGuid` + `githubUrl` for catalogue seed-from-nothing. |
-| `icon-brief.md` | Notes how `icon.png` was produced from Julie’s site favicon. |
-| `icon.png` | 1024×1024 opaque RGB from https://lettingsadviceservice.co.uk. `npm run check:icon`. |
-| `screenshot.png` | Documents quick view (Guides home). Re-capture: `node --import tsx scripts/capture-store-screenshot.mjs` (or `npm run screenshot -- '<signed-url>' store/screenshot.png`). |
+| `icon-brief.md` | LAS house/headset logo source + pad/upscale + `check:icon`. |
+| `icon.png` | 1024×1024 opaque RGB from `las-app-logo.png`. `npm run check:icon`. |
+| `screenshot.png` | Documents quick view (Guides home, category cards + list). Re-capture: `node --import tsx scripts/capture-store-screenshot.mjs` (or `npm run screenshot -- '<signed-url>' store/screenshot.png`). |
 
 Also required at repo root for the batch seed script: `manifest.json` + `Dockerfile`.
 
 Without `screenshot.png`, readiness is **draft** and the seed script skips unless `LIST_DRAFTS=1`.
 
-Runtime manifest is repo-root [`manifest.json`](../manifest.json) (seedable) plus [`manifest.example.json`](../manifest.example.json) (partner paste). Do not put listing copy or price in the manifest — price is a Store listing field (`priceType` + `price`).
+Runtime manifest is repo-root [`manifest.json`](../manifest.json) (seedable) plus [`manifest.example.json`](../manifest.example.json) (partner paste). Do not put listing copy or price in the manifest - price is a Store listing field (`priceType` + `price`).

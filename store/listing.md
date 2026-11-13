@@ -8,11 +8,13 @@ Lettings Advice
 
 # Intro description
 
-Browse Julie’s lettings advice documents and chat with the advice team without leaving COHO.
+Julie's Lettings Advice Service inside COHO: browse guides, free templates, and videos, then chat with the advice team when they are online.
 
 # Full description
 
-A COHO Atrium web app that embeds the Lettings Advice Service Tawk.to chat and a Documents catalogue (guides, free templates, and videos scraped from Julie’s library) for connected organisations. Entitlement is a Store install billed as a flat monthly catalogue price (see `store/pricing.md`). Secure Mode visitor login is not used — the Tawk property is shared with another team.
+Bring Julie's Lettings Advice Service into COHO for your organisation. Managers open a signed Store quick view and get the Documents library (guides, downloadable free templates, and video tutorials from Julie's catalogue) plus live chat with the advice team via Tawk.to when they are in hours.
+
+Entitlement is a Store install billed as a flat monthly catalogue price (GBP 70 net; see `store/pricing.md`). There is no one-off fee and no in-app billing UI. Secure Mode visitor login is not used; the Tawk property is shared with another team. Chat needs `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets.
 
 # Category
 
@@ -20,18 +22,19 @@ Lettings
 
 # What's new
 
-Documents catalogue with guides, free templates, and Julie’s library videos; Tawk chat with out-of-hours panel matching her livechat schedule. Store billing: flat monthly listing (GBP 70 net) via Atrium monthly billing — no one-off fee.
+Store pack refreshed with the LAS house/headset logo and a Documents quick-view screenshot (guides, templates, videos). Product: Julie's catalogue plus in-hours Tawk chat with an out-of-hours notice. Billing stays flat monthly GBP 70 via Atrium Store monthly billing.
 
 # What it can do
 
-- Open a signed quick view from the Store
-- Browse guides, free templates, and video tutorials from Lettings Advice Service
-- Start a Tawk chat with the advice team
-- Disconnect wipes this app’s connection secrets from SQLite
+- Open a signed quick view from the COHO Store
+- Browse Julie's guides, free templates, and video tutorials without leaving COHO
+- Download free templates from the Documents catalogue
+- Chat with the Lettings Advice Service team when they are online (out-of-hours notice when closed)
+- Disconnect clears this app's connection secrets from SQLite
 
 # Pre-requisites
 
-Connect from the COHO Store (card required for a paid install). No Public API capability grants are required for the current chat + document library scope. Set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.
+Connect from the COHO Store (card required for a paid install). No Public API capability grants are required for the current chat + Documents scope. Set `TAWK_PROPERTY_ID` and `TAWK_WIDGET_ID` in Hosting runtime secrets (required for chat). The Secure Mode API key is unused.
 
 # Background tasks
 
@@ -43,4 +46,4 @@ AWS London
 
 # Permission reasons
 
-None — `requestedCapabilities` is empty. Chat and Documents do not call the Public API in this release.
+None - `requestedCapabilities` is empty. Chat and Documents do not call the Public API in this release.

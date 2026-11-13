@@ -1,4 +1,4 @@
-# Atrium quality-gate status — atrium-lettings-advice
+# Atrium quality-gate status - atrium-lettings-advice
 
 Checked against HouseShare `docs/feature-plans/atrium-quality-gate-checklist.md` and
 `docs/feature-plans/atrium-store-listing-pack.md` (origin/master, including DEV-3249
@@ -39,7 +39,7 @@ Remotes (keep at the same SHA):
 | Item | Status | Notes |
 |------|--------|-------|
 | Repo-root `manifest.json` | **Pass** | Seed script reads it; `manifest.example.json` is paste-only |
-| Minimal capabilities | **Pass** | `[]` — Secure Mode identity scopes removed |
+| Minimal capabilities | **Pass** | `[]` - Secure Mode identity scopes removed |
 | Event/schedule keys match | **Pass** | Both empty |
 | HTTPS BaseUrl | **Hosting** | Set after provision; do not invent local BaseUrl in catalogue seed |
 | `runtimeEnv` TAWK_* | **Pass** | Property + widget required; API key optional/unused |
@@ -57,8 +57,8 @@ Remotes (keep at the same SHA):
 | Item | Status | Notes |
 |------|--------|-------|
 | `store/listing.md` §20.3 fields | **Pass** | Includes Data location + Permission reasons |
-| `store/icon.png` + `icon-brief.md` | **Pass** | `npm run check:icon` |
-| `store/screenshot.png` | **Pass** | Documents home (local signed/dev launch) |
+| `store/icon.png` + `icon-brief.md` | **Pass** | LAS house/headset logo from `las-app-logo.png`; `npm run check:icon` |
+| `store/screenshot.png` | **Pass** | Documents Guides home (local capture helper) |
 | `store/seed.json` | **Pass** | Stable Guid + CFL `githubUrl` |
 | `Dockerfile` | **Pass** | `PORT` + `ATRIUM_DATA_DIR=/data`, UID 65532 |
 | Price | **Labs set** | Flat GBP 70 via `update-listing` (`store/pricing.md`) |
@@ -69,7 +69,7 @@ Remotes (keep at the same SHA):
 |------|--------|-------|
 | Tawk floating bubble | **Pass** | Env-only IDs; `autoStart` for Inline; no Secure Mode |
 | Documents catalogue | **Pass** | Guides / free templates / YouTube videos |
-| Out-of-hours notice | **Pass** | Hard-coded London hours; does not change Julie’s Tawk admin |
+| Out-of-hours notice | **Pass** | Hard-coded London hours; does not change Julie's Tawk admin |
 | Billing UI | **Out of scope** | Entitlement = Store monthly install |
 
 ## Hosting / catalogue (ops)
