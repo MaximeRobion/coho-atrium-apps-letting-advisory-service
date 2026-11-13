@@ -1,4 +1,4 @@
-# Store pricing — Lettings Advice Service
+# Store pricing - Letting Advisory Service
 
 Commercial values for the COHO Atrium Store listing. **Not** part of the runtime
 manifest (`assets/manifest.json`). Do not put prices in marketing blurbs; the
@@ -7,11 +7,11 @@ Store card shows the catalogue price.
 | Field | Value |
 |---|---|
 | Model | Monthly (existing Atrium Store billing) |
-| Customer list price | **GBP 70** net of VAT, **flat** per organisation per month |
+| Customer list price | **GBP 50** net of VAT, **flat** per organisation per month |
 | `priceType` | `Paid` (`1`) |
 | Pricing mode | Flat (not per-unit, not banded, not one-off) |
 | One-off install fee | **No** |
-| COHO platform share | **20%** of Net Receipts (Developer Share **80%**) — set by COHO; do not invent a custom cut |
+| COHO platform share | **20%** of Net Receipts (Developer Share **80%**) - set by COHO; do not invent a custom cut |
 | Who bills | COHO (merchant of record, card) |
 
 ## How to set it on the listing
@@ -22,7 +22,7 @@ Store card shows the catalogue price.
 ```json
 {
   "priceType": 1,
-  "price": 70
+  "price": 50
 }
 ```
 
@@ -31,8 +31,8 @@ Partner path: `POST .../atrium/developer/apps/{appReference}/update-listing`
 
 3. COHO seeds land **Listed + Public** via
    `scripts/register-atrium-seed-store-packs-labs.sh` (no SA approve click).
-   Still set Paid / 70 with update-listing after the row exists — the seed
-   script does not invent price. Confirm the Store card shows **Paid — 70**.
+   Still set Paid / 50 with update-listing after the row exists - the seed
+   script does not invent price. Confirm the Store card shows **Paid - 50**.
 
 Build an app / register may still create the row as Free. Edit listing UI may
 omit price controls; the API body above is the supported path until FE catches up.

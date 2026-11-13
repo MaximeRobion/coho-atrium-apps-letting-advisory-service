@@ -1,6 +1,6 @@
 # atrium-lettings-advice
 
-COHO Atrium seed app for the **Lettings Advice Service** (Julie’s Tawk.to chat + Documents catalogue).
+COHO Atrium seed app for the **Lettings Advice Service** (Julie's Tawk.to chat + Documents catalogue).
 
 Private product app under `CompanyForLife/atrium-lettings-advice`. It is **not** part of the HouseShare monorepo. Persistent state is **SQLite** under `ATRIUM_DATA_DIR` (Hosting: `/data` on EFS) and holds **connection secrets only**. Support ownership: **COHO** (internal seed).
 
@@ -8,13 +8,13 @@ Linear: [DEV-2840](https://linear.app/teamcoho/issue/DEV-2840/lettings-advice-se
 
 ## Scope
 
-- **Web app** quick view (`/ui`, `openPresentation: side`): Documents page with a floating Tawk bubble (same pattern as [Julie’s livechat page](https://lettingsadviceservice.co.uk/livechat); shell X closes — no footer Back/Close). No Documents/Chat tab strip.
-- Chat = Tawk **Inline** floating widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (IDs from env / Hosting runtime secrets only — **no code defaults**). Do **not** set `Tawk_API.embedded` on Julie’s Inline widget IDs — that collapses the composer and blocks sends.
-- **Documents** = static catalogue scraped from Julie’s site (`src/documents/catalogue.ts`): Guides (all), Templates (free only — paid “Buy for …” skipped), Videos (YouTube links from Julie’s library). UI: three category cards → searchable list → View / Download / Watch. Files are **not** hosted in this app. The old Tawk Knowledge Base iframe is removed.
-- **Out of hours:** Hard-coded `Europe/London` hours matching Julie’s site (Mon–Fri 10:00–16:00, Sat 10:00–13:00, Sun closed). When closed, the app shows an out-of-hours notice and does **not** show Tawk (so the offline ticket form never appears). When open, the bubble loads with `Tawk_API.autoStart = true` (required for Inline widgets — `start()`/`showWidget()` alone leave a 0x0 bubble on Labs). If `getStatus` / `onStatusChange` reports `offline`, the notice appears and the bubble is hidden. These app hours can **drift** from Julie’s Tawk Widget Scheduler — update `src/chatHours.ts` (and `src/ui/components/shared/chat-hours.js`) when her site schedule changes. Do not change Julie’s Tawk dashboard for this. Documents stay available.
+- **Web app** quick view (`/ui`, `openPresentation: side`): Documents page with a floating Tawk bubble (same pattern as [Julie's livechat page](https://lettingsadviceservice.co.uk/livechat); shell X closes - no footer Back/Close). No Documents/Chat tab strip.
+- Chat = Tawk **Inline** floating widget at `https://embed.tawk.to/{TAWK_PROPERTY_ID}/{TAWK_WIDGET_ID}` (IDs from env / Hosting runtime secrets only - **no code defaults**). Do **not** set `Tawk_API.embedded` on Julie's Inline widget IDs - that collapses the composer and blocks sends.
+- **Documents** = static catalogue scraped from Julie's site (`src/documents/catalogue.ts`): Guides (all), Templates (free only - paid “Buy for …” skipped), Videos (YouTube links from Julie's library). UI: three category cards → searchable list → View / Download / Watch. Files are **not** hosted in this app. The old Tawk Knowledge Base iframe is removed.
+- **Out of hours:** Hard-coded `Europe/London` hours matching Julie's site (Mon-Fri 10:00-16:00, Sat 10:00-13:00, Sun closed). When closed, the app shows an out-of-hours notice and does **not** show Tawk (so the offline ticket form never appears). When open, the bubble loads with `Tawk_API.autoStart = true` (required for Inline widgets - `start()`/`showWidget()` alone leave a 0x0 bubble on Labs). If `getStatus` / `onStatusChange` reports `offline`, the notice appears and the bubble is hidden. These app hours can **drift** from Julie's Tawk Widget Scheduler - update `src/chatHours.ts` (and `src/ui/components/shared/chat-hours.js`) when her site schedule changes. Do not change Julie's Tawk dashboard for this. Documents stay available.
 
-- **Entitlement = Store install** at a flat **GBP 70 / month** (Atrium monthly billing; COHO platform share 20% of Net Receipts). No one-off fee. No in-app billing, cancel, or tracking UI. Set catalogue price via Store `update-listing` (`priceType` Paid, `price` 70) — see `store/pricing.md`.
-- **Secure Mode / visitor login is out** — another team shares the same Tawk property. Do **not** enable Secure Mode in Tawk admin for this app. The app does **not** call `Tawk_API.login`. `TAWK_API_KEY` is optional/unused; hash helpers remain as dead code only.
+- **Entitlement = Store install** at a flat **GBP 50 / month** (Atrium monthly billing; COHO platform share 20% of Net Receipts). No one-off fee. No in-app billing, cancel, or tracking UI. Set catalogue price via Store `update-listing` (`priceType` Paid, `price` 50) - see `store/pricing.md`.
+- **Secure Mode / visitor login is out** - another team shares the same Tawk property. Do **not** enable Secure Mode in Tawk admin for this app. The app does **not** call `Tawk_API.login`. `TAWK_API_KEY` is optional/unused; hash helpers remain as dead code only.
 
 ## Stack
 
@@ -46,7 +46,7 @@ COHO Public API base URL comes from `lifecycle.setup` (`data.apiBaseUrl`), not f
 
 ## Hosting secrets / Tawk (Labs → Prod)
 
-Platform injects `PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` on every provision. Tawk IDs and any other app env belong in **Hosting runtime secrets** — Liam’s durable key/value map (HouseShare [#5763](https://github.com/CompanyForLife/HouseShare/pull/5763) / [#5765](https://github.com/CompanyForLife/HouseShare/pull/5765)). Saving the map on a Ready hosted app re-provisions and injects each key as container env from the per-app Secrets Manager `Env` document. Do **not** hand-edit ECS task definitions: the next Hosted Update wipes them.
+Platform injects `PORT`, `ATRIUM_DATA_DIR`, `ATRIUM_FRAME_ANCESTORS`, `ATRIUM_PARENT_ORIGIN`, and `ATRIUM_SETUP_SECRET` on every provision. Tawk IDs and any other app env belong in **Hosting runtime secrets** - Liam's durable key/value map (HouseShare [#5763](https://github.com/CompanyForLife/HouseShare/pull/5763) / [#5765](https://github.com/CompanyForLife/HouseShare/pull/5765)). Saving the map on a Ready hosted app re-provisions and injects each key as container env from the per-app Secrets Manager `Env` document. Do **not** hand-edit ECS task definitions: the next Hosted Update wipes them.
 
 There are **no baked-in Tawk IDs** in application code. Chat is unconfigured until `TAWK_PROPERTY_ID` + `TAWK_WIDGET_ID` are set.
 
@@ -62,24 +62,24 @@ Do **not** put secrets in Store light/native config, catalogue copy, or the imag
 
 ### Set / clear Hosting runtime secrets
 
-- **UI:** My apps / partner portal / organisation Store manage / Super Admin review — **Hosting runtime secrets** editor
+- **UI:** My apps / partner portal / organisation Store manage / Super Admin review - **Hosting runtime secrets** editor
 - **API:** `PUT /v1.1/public/atrium/apps/{appReference}/runtime-env` (full-replace map); `DELETE …/runtime-env/{keyName}` for one key
 - **MCP:** `PutAtriumRuntimeEnv` / `DeleteAtriumRuntimeEnvKey` (and publisher variants)
 - Values are write-only on list endpoints. Reserved names (`PORT`, `ATRIUM_*`, `AWS_*`, …) cannot be overridden.
-- Manifest `runtimeEnv` marks `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` as **required** — Ready hosted apps cannot re-provision until they are set.
+- Manifest `runtimeEnv` marks `TAWK_PROPERTY_ID` / `TAWK_WIDGET_ID` as **required** - Ready hosted apps cannot re-provision until they are set.
 
 ### Labs (ops checklist)
 
 1. Register the Hosted app on Labs Store (GitHub + Dockerfile) and wait until provision state is **Ready**.
 2. Browser host is `{slug}.labs.coho.software` (this app: `letting-advi-ce2992b1.labs.coho.software`).
-3. In **Hosting runtime secrets**, set Julie’s IDs (`TAWK_PROPERTY_ID=687cb5a73606072bf84a6030`, `TAWK_WIDGET_ID=1j0jib5sb`) and save (re-provisions automatically).
+3. In **Hosting runtime secrets**, set Julie's IDs (`TAWK_PROPERTY_ID=687cb5a73606072bf84a6030`, `TAWK_WIDGET_ID=1j0jib5sb`) and save (re-provisions automatically).
 4. **Do not** enable Tawk Secure Mode for dogfood.
 5. After a Hosted Update, confirm the runtime-secrets map still has those keys (hand-edited ECS env is gone).
 
 ### Prod (same checklist before go-live)
 
 1. Confirm Hosted app is Ready on the production Hosting cluster.
-2. Set Julie’s public widget IDs via runtime secrets (required).
+2. Set Julie's public widget IDs via runtime secrets (required).
 3. Do **not** enable Secure Mode on the shared property.
 
 ## Local UI
@@ -94,7 +94,7 @@ Prints a localhost `/ui` URL (unsigned; requires `NODE_ENV=development` + `ATRIU
 
 `npm run dev` loads `.env` then `.env.example` (existing keys win). The example file ships the COHO **test** Inline widget for dogfood. Force-open is on by default in atrium local/dev (`ATRIUM_DEV_FORCE_CHAT_OPEN=0` to dogfood the out-of-hours panel).
 
-**Chat diagnostics:** with `ATRIUM_DEV_MODE` (local `npm run dev`) or `?lasDebug=1` on `/ui`, the page shows an on-page strip and console logs for masked `TAWK_*` presence, hours gate, Tawk status, and script load/start/maximize. No secrets are logged. `lasDebug` is excluded from atrium launch signature verification, so Labs can append `?lasDebug=1` to a signed `/ui` URL. After a Hosted Update that wiped temporary ECS `TAWK_*`, use the strip to confirm env presence — then re-inject `TAWK_*` until Hosting injects durable SM `Env`.
+**Chat diagnostics:** with `ATRIUM_DEV_MODE` (local `npm run dev`) or `?lasDebug=1` on `/ui`, the page shows an on-page strip and console logs for masked `TAWK_*` presence, hours gate, Tawk status, and script load/start/maximize. No secrets are logged. `lasDebug` is excluded from atrium launch signature verification, so Labs can append `?lasDebug=1` to a signed `/ui` URL. After a Hosted Update that wiped temporary ECS `TAWK_*`, use the strip to confirm env presence - then re-inject `TAWK_*` until Hosting injects durable SM `Env`.
 
 | Goal | Command |
 |------|---------|
@@ -128,7 +128,7 @@ Do **not** enable Secure Mode in Tawk admin for this property (shared with anoth
 
 ### postMessage parent origin
 
-The app posts `atrium.quickView.ready` / `close` and accepts `atrium.quickView.theme` only against `PARENT_ORIGIN` from Hosting `ATRIUM_PARENT_ORIGIN` (see `src/ui/quickView.ts`). App code does not hard-code `applabs.coho.management`. If the console shows a postMessage origin mismatch between the Store shell (`applabs.coho.management`) and the app host (`letting-advice*.labs.coho.software`), that is a Hosting / Store `ATRIUM_PARENT_ORIGIN` injection issue — out of app scope unless the wrong origin is baked into this repo.
+The app posts `atrium.quickView.ready` / `close` and accepts `atrium.quickView.theme` only against `PARENT_ORIGIN` from Hosting `ATRIUM_PARENT_ORIGIN` (see `src/ui/quickView.ts`). App code does not hard-code `applabs.coho.management`. If the console shows a postMessage origin mismatch between the Store shell (`applabs.coho.management`) and the app host (`letting-advice*.labs.coho.software`), that is a Hosting / Store `ATRIUM_PARENT_ORIGIN` injection issue - out of app scope unless the wrong origin is baked into this repo.
 
 ## Dockerfile
 
@@ -142,11 +142,11 @@ Hosting injects `ATRIUM_*` / `PORT` only. Do not bake secrets into the image.
 
 `design/` is the COHO Atrium design kit (from HouseShare `samples/atrium/hello-node/design/`). See [`AGENTS.md`](./AGENTS.md).
 
-COHO seed catalogue handoff lives under [`store/`](./store/) (`listing.md`, `icon.png`, `screenshot.png`, `seed.json`) — see HouseShare `docs/feature-plans/atrium-store-listing-pack.md` and [`docs/quality-gate-status.md`](./docs/quality-gate-status.md). Legacy [`assets/`](./assets/) mirrors copy only; do not treat it as the seed pack.
+COHO seed catalogue handoff lives under [`store/`](./store/) (`listing.md`, `icon.png`, `screenshot.png`, `seed.json`) - see HouseShare `docs/feature-plans/atrium-store-listing-pack.md` and [`docs/quality-gate-status.md`](./docs/quality-gate-status.md). Legacy [`assets/`](./assets/) mirrors copy only; do not treat it as the seed pack.
 
 ## Remotes / Labs
 
-Canonical source of truth is the CompanyForLife org repo. The personal Labs clone is the deploy target for Atrium Labs dogfood — keep both `main` branches at the same SHA.
+Canonical source of truth is the CompanyForLife org repo. The personal Labs clone is the deploy target for Atrium Labs dogfood - keep both `main` branches at the same SHA.
 
 | Remote | URL | Role |
 |--------|-----|------|
@@ -195,4 +195,4 @@ alias git-pushall='git push origin'
 
 ## Support ownership
 
-COHO owns this seed (bugs, Hosting, Store listing). Chat content and history live in Julie’s Tawk property; disconnect only wipes this app’s connection secrets. No manager PII is sent to Tawk via Secure Mode login from this app.
+COHO owns this seed (bugs, Hosting, Store listing). Chat content and history live in Julie's Tawk property; disconnect only wipes this app's connection secrets. No manager PII is sent to Tawk via Secure Mode login from this app.

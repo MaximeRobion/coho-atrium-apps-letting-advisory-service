@@ -61,7 +61,7 @@ Remotes (keep at the same SHA):
 | `store/screenshot.png` | **Pass** | Documents Guides home (local capture helper) |
 | `store/seed.json` | **Pass** | Stable Guid + CFL `githubUrl` |
 | `Dockerfile` | **Pass** | `PORT` + `ATRIUM_DATA_DIR=/data`, UID 65532 |
-| Price | **Labs set** | Flat GBP 70 via `update-listing` (`store/pricing.md`) |
+| Price | **Labs set** | Flat GBP 50 via `update-listing` (`store/pricing.md`) |
 
 ## Product
 

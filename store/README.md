@@ -11,7 +11,7 @@ Quality gate: [atrium-quality-gate-checklist.md](https://github.com/CompanyForLi
 | File | Status |
 |---|---|
 | `listing.md` | Every §20.3 field (including Data location + Permission reasons). Julie-facing copy: guides, templates, videos + chat. |
-| `pricing.md` | Flat monthly **GBP 70** net; COHO platform share **20%**; how to set via `update-listing`. |
+| `pricing.md` | Flat monthly **GBP 50** net; COHO platform share **20%**; how to set via `update-listing`. |
 | `seed.json` | Stable `appGuid` + `githubUrl` for catalogue seed-from-nothing. |
 | `icon-brief.md` | LAS house/headset logo source + pad/upscale + `check:icon`. |
 | `icon.png` | 1024×1024 opaque RGB from `las-app-logo.png`. `npm run check:icon`. |
