@@ -30,7 +30,7 @@ Remotes (keep at the same SHA):
 |------|--------|----------|
 | Signed schema/get/put | **Pass** | Empty Draft 2020-12 object |
 | Quick view iframe + CSP + close | **Pass** | `/ui`, Tawk + YouTube CSP, `ATRIUM_FRAME_ANCESTORS` / `ATRIUM_PARENT_ORIGIN` |
-| Hosted HTTPS `browserBaseUrl` | **Pass (Labs)** | `manifest.json` → `letting-advi-ce2992b1.labs.coho.software` |
+| Hosted HTTPS `browserBaseUrl` | **Hosting** | Repo `manifest.json` leaves `browserBaseUrl` null; Hosting injects/preserves the public origin |
 | External configure | **N/A** | Not used |
 | Light prefs unused | **Documented** | Empty schema; no product prefs |
 

@@ -6,7 +6,7 @@
   },
   "config": {
     "mode": "native",
-    "browserBaseUrl": "https://letting-advi-ce2992b1.labs.coho.software",
+    "browserBaseUrl": null,
     "externalConfigureUrl": null,
     "schemaPath": "/config/schema",
     "getPath": "/config",
