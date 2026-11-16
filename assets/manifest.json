@@ -10,13 +10,13 @@
       "name": "TAWK_PROPERTY_ID",
       "secret": false,
       "required": true,
-      "description": "Tawk property id (Hosting: Julie LAS 687cb5a73606072bf84a6030). No code default."
+      "description": "Tawk.to property id. Set via Hosting runtime secrets (or local .env). No code default."
     },
     {
       "name": "TAWK_WIDGET_ID",
       "secret": false,
       "required": true,
-      "description": "Tawk Inline widget id (Hosting: Julie LAS 1j0jib5sb). No code default."
+      "description": "Tawk.to Inline widget id. Set via Hosting runtime secrets (or local .env). No code default."
     },
     {
       "name": "TAWK_API_KEY",

@@ -202,9 +202,9 @@ test('signed empty config schema/get/put', async () => {
 });
 
 test('tawk config returns embed + knowledge base; never exposes api key', async () => {
-  process.env.TAWK_PROPERTY_ID = '687cb5a73606072bf84a6030';
-  process.env.TAWK_WIDGET_ID = '1j0jib5sb';
-  process.env.TAWK_KNOWLEDGE_BASE_URL = 'https://lettingadviceservice.tawk.help';
+  process.env.TAWK_PROPERTY_ID = 'test-property-id';
+  process.env.TAWK_WIDGET_ID = 'test-widget-id';
+  process.env.TAWK_KNOWLEDGE_BASE_URL = 'https://example.tawk.help';
   process.env.TAWK_API_KEY = 'unit-test-api-key-must-not-leak';
 
   await withServer(async (port) => {
@@ -226,15 +226,15 @@ test('tawk config returns embed + knowledge base; never exposes api key', async 
     assert.equal(body.ok, true);
     assert.equal(
       body.embedUrl,
-      'https://embed.tawk.to/687cb5a73606072bf84a6030/1j0jib5sb',
+      'https://embed.tawk.to/test-property-id/test-widget-id',
     );
-    assert.equal(body.knowledgeBaseUrl, 'https://lettingadviceservice.tawk.help');
+    assert.equal(body.knowledgeBaseUrl, 'https://example.tawk.help');
     assert.equal(body.configured, true);
     assert.equal(body.apiKey, undefined);
     assert.equal(body.secureModeEnabled, undefined);
     const env = body.env as Record<string, unknown>;
-    assert.equal(env.TAWK_PROPERTY_ID, 'set:len=24:…6030');
-    assert.equal(env.TAWK_WIDGET_ID, 'set:len=9:…b5sb');
+    assert.equal(env.TAWK_PROPERTY_ID, 'set:len=16:…y-id');
+    assert.equal(env.TAWK_WIDGET_ID, 'set:len=14:…t-id');
     assert.equal(env.TAWK_API_KEY, 'set');
     assert.equal(env.configured, true);
     const raw = JSON.stringify(body);
